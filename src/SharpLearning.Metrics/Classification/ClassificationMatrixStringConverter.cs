@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Globalization;
 
 namespace SharpLearning.Metrics.Classification
 {
@@ -46,7 +47,7 @@ namespace SharpLearning.Metrics.Classification
 
             foreach (var className in uniqueTargets)
             {
-                horizontalClassNames += string.Format(";{0}", className);
+                horizontalClassNames += string.Format(CultureInfo.InvariantCulture, ";{0}", className);
             }
 
             horizontalClassNames += horizontalClassNames;
@@ -59,12 +60,12 @@ namespace SharpLearning.Metrics.Classification
                 var row = string.Format("{0}", uniqueTargets[x]);
                 for (int y = 0; y < numberofCols; y++)
                 {
-                    row += string.Format(";{0:0.000}", combinedMatrix[x][y]);
+                    row += string.Format(CultureInfo.InvariantCulture, ";{0:0.000}", combinedMatrix[x][y]);
                 }
                 builder.AppendLine(row);
             }
 
-            builder.AppendLine(string.Format("Error: {0:0.000}", 100.0 * error));
+            builder.AppendLine(string.Format(CultureInfo.InvariantCulture, "Error: {0:0.000}", 100.0 * error));
 
             return builder.ToString();
         }
