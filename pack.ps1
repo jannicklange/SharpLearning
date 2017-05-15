@@ -1,4 +1,4 @@
-$projects = Get-ChildItem -Path $testRoot -File -Recurse -Include *.csproj -Exclude *Test.csproj
+$projects = Get-ChildItem -Path $testRoot -Recurse -Include *.csproj -Exclude *Test.csproj
 Foreach ($p in $projects)
 {
     #Push-Location $p.Directory
