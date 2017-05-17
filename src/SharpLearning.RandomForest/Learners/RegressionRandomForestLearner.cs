@@ -11,14 +11,16 @@ using System.Threading.Tasks;
 
 namespace SharpLearning.RandomForest.Learners
 {
+    using SharpLearning.DecisionTrees.Nodes;
+
     /// <summary>
     /// Trains a regression random forest
     /// http://en.wikipedia.org/wiki/Random_forest
     /// http://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm
     /// </summary>
     public sealed class RegressionRandomForestLearner<TRegressionDecisionTreeLearner, TRegressionDecisionTreeModel> : IIndexedLearner<double>, ILearner<double> 
-                                                        where TRegressionDecisionTreeLearner : DecisionTreeLearner, IIndexedLearner<double>, ILearner<double>
-                                                        where TRegressionDecisionTreeModel : IPredictorModel<double>
+                                                        where TRegressionDecisionTreeLearner : DecisionTreeLearner<TRegressionDecisionTreeModel>, IIndexedLearner<double>, ILearner<double>
+                                                        where TRegressionDecisionTreeModel : BinaryTree
     {
         readonly int m_trees;
         int m_featuresPrSplit;
