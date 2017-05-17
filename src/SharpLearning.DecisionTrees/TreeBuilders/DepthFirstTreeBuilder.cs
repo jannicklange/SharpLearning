@@ -13,7 +13,7 @@ namespace SharpLearning.DecisionTrees.TreeBuilders
     /// <summary>
     /// Builds a decision tree in a depth first manner
     /// </summary>
-    public sealed class DepthFirstTreeBuilder : ITreeBuilder
+    public sealed class DepthFirstTreeBuilder<TTreeType> : ITreeBuilder<TTreeType> where TTreeType : BinaryTree
     {
         readonly ISplitSearcher m_splitSearcher;
         readonly IImpurityCalculator m_impurityCalculator;
@@ -80,8 +80,9 @@ namespace SharpLearning.DecisionTrees.TreeBuilders
         /// <param name="indices"></param>
         /// <param name="weights"></param>
         /// <returns></returns>
-        public BinaryTree Build(F64MatrixView observations, double[] targets, int[] indices, double[] weights)
+        public TTreeType Build(F64MatrixView observations, double[] targets, int[] indices, double[] weights)
         {
+
             Array.Clear(m_variableImportance, 0, m_variableImportance.Length);
 
             Array.Resize(ref m_workTargets, indices.Length);
@@ -248,8 +249,9 @@ namespace SharpLearning.DecisionTrees.TreeBuilders
                 nodes.Add(leaf);
             }
 
-            return new BinaryTree(nodes, probabilities, targetNames, 
-                m_variableImportance.ToArray());
+            //return new BinaryTree(nodes, probabilities, targetNames, m_variableImportance.ToArray());
+            var retTree = (TTreeType)Activator.CreateInstance(typeof(TTreeType), nodes, probabilities, targetNames, this.m_variableImportance.ToArray());
+            return retTree;
         }
 
         void SetNextFeatures(int totalNumberOfFeature)

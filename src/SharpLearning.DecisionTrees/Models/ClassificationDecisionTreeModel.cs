@@ -14,89 +14,40 @@ namespace SharpLearning.DecisionTrees.Models
     /// Classification Decision tree model
     /// </summary>
     [Serializable]
-    public sealed class ClassificationDecisionTreeModel : IPredictorModel<double>, IPredictorModel<ProbabilityPrediction>
+    public sealed class ClassificationDecisionTreeModel : BinaryTree, IPredictorModel<double>, IPredictorModel<ProbabilityPrediction>
     {
         /// <summary>
         /// 
         /// </summary>
-        public readonly BinaryTree Tree;
-
-        readonly double[] m_variableImportance;
-
-        /// <summary>
-        /// 
-        /// </summary>
         /// <param name="tree"></param>
-        public ClassificationDecisionTreeModel(BinaryTree tree)
+        public ClassificationDecisionTreeModel(List<Node> nodes, List<double[]> probabilities, double[] targetNames,
+            double[] variableImportance) : base(nodes, probabilities, targetNames, variableImportance)
         {
-            if (tree == null) { throw new ArgumentNullException("root"); }
-            Tree = tree;
-            m_variableImportance = tree.VariableImportance;
+        }
+
+        ProbabilityPrediction IPredictor<ProbabilityPrediction>.Predict(double[] observations)
+        {
+            return this.PredictProbability(observations);
+        }
+
+        ProbabilityPrediction[] IPredictor<ProbabilityPrediction>.Predict(F64Matrix observations)
+        {
+            return this.PredictProbability(observations);
+        }
+
+        ProbabilityPrediction[] IPredictor<ProbabilityPrediction>.Predict(F64Matrix observations, int[] indices)
+        {
+            return this.PredictProbability(observations, indices);
         }
 
         /// <summary>
-        /// Predicts a single observation
-        /// </summary>
-        /// <param name="observation"></param>
-        /// <returns></returns>
-        public double Predict(double[] observation)
-        {
-            return Tree.Predict(observation);
-        }
-
-        /// <summary>
-        /// Predicts a set of observations 
-        /// </summary>
-        /// <param name="observations"></param>
-        /// <returns></returns>
-        public double[] Predict(F64Matrix observations)
-        {
-            var rows = observations.RowCount;
-            var predictions = new double[rows];
-            for (int i = 0; i < rows; i++)
-            {
-                predictions[i] = Tree.Predict(observations.Row(i));
-            }
-
-            return predictions;
-        }
-
-        /// <summary>
-        /// Predicts the observation subset provided by indices
-        /// </summary>
-        /// <param name="observations"></param>
-        /// <param name="indices"></param>
-        /// <returns></returns>
-        public double[] Predict(F64Matrix observations, int[] indices)
-        {
-            var rows = observations.RowCount;
-            var predictions = new double[indices.Length];
-            for (int i = 0; i < indices.Length; i++)
-            {
-                predictions[i] = Tree.Predict(observations.Row(indices[i]));
-            }
-
-            return predictions;
-        }
-
-        /// <summary>
-        /// Private explicit interface implementation for probability predictions
-        /// </summary>
-        /// <param name="observation"></param>
-        /// <returns></returns>
-        ProbabilityPrediction IPredictor<ProbabilityPrediction>.Predict(double[] observation)
-        {
-            return PredictProbability(observation);
-        }
-
-        /// <summary>
-        /// Predicts a single observation with probabilities
+        /// Predict probabilities using a continous node strategy
         /// </summary>
         /// <param name="observation"></param>
         /// <returns></returns>
         public ProbabilityPrediction PredictProbability(double[] observation)
         {
-            return Tree.PredictProbability(observation);
+            return PredictProbability(Nodes[0], observation);
         }
 
         /// <summary>
@@ -110,7 +61,7 @@ namespace SharpLearning.DecisionTrees.Models
             var predictions = new ProbabilityPrediction[rows];
             for (int i = 0; i < rows; i++)
             {
-                predictions[i] = Tree.PredictProbability(observations.Row(i));
+                predictions[i] = this.PredictProbability(observations.Row(i));
             }
 
             return predictions;
@@ -128,38 +79,43 @@ namespace SharpLearning.DecisionTrees.Models
             var predictions = new ProbabilityPrediction[indices.Length];
             for (int i = 0; i < indices.Length; i++)
             {
-                predictions[i] = Tree.PredictProbability(observations.Row(indices[i]));
+                predictions[i] = this.PredictProbability(observations.Row(indices[i]));
             }
 
             return predictions;
         }
 
-
         /// <summary>
-        /// Returns the rescaled (0-100) and sorted variable importance scores with corresponding name
+        /// Predict probabilities using a continous node strategy
         /// </summary>
-        /// <param name="featureNameToIndex"></param>
+        /// <param name="node"></param>
+        /// <param name="observation"></param>
         /// <returns></returns>
-        public Dictionary<string, double> GetVariableImportance(Dictionary<string, int> featureNameToIndex)
+        protected ProbabilityPrediction PredictProbability(Node node, double[] observation)
         {
-            var max = m_variableImportance.Max();
-            
-            var scaledVariableImportance = m_variableImportance
-                .Select(v => (v / max) * 100.0)
-                .ToArray();
+            if (node.FeatureIndex == -1.0)
+            {
+                var probabilities = Probabilities[node.LeafProbabilityIndex];
+                var targetProbabilities = new Dictionary<double, double>();
 
-            return featureNameToIndex.ToDictionary(kvp => kvp.Key, kvp => scaledVariableImportance[kvp.Value])
-                        .OrderByDescending(kvp => kvp.Value)
-                        .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-        }
+                for (int i = 0; i < TargetNames.Length; i++)
+                {
+                    targetProbabilities.Add(TargetNames[i], probabilities[i]);
+                }
 
-        /// <summary>
-        /// Gets the raw unsorted vatiable importance scores
-        /// </summary>
-        /// <returns></returns>
-        public double[] GetRawVariableImportance()
-        {
-            return m_variableImportance;
+                return new ProbabilityPrediction(node.Value, targetProbabilities);
+            }
+
+            if (observation[node.FeatureIndex] <= node.Value)
+            {
+                return PredictProbability(Nodes[node.LeftIndex], observation);
+            }
+            else
+            {
+                return PredictProbability(Nodes[node.RightIndex], observation);
+            }
+
+            throw new InvalidOperationException("The tree is degenerated.");
         }
 
         /// <summary>

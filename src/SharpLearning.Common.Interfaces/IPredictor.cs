@@ -1,6 +1,8 @@
 ﻿
 namespace SharpLearning.Common.Interfaces
 {
+    using SharpLearning.Containers.Matrices;
+
     /// <summary>
     /// General interface for predictor. 
     /// </summary>
@@ -10,8 +12,12 @@ namespace SharpLearning.Common.Interfaces
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="observation"></param>
+        /// <param name="observations"></param>
         /// <returns></returns>
-        TPrediction Predict(double[] observation);
+        TPrediction Predict(double[] observations);
+
+        TPrediction[] Predict(F64Matrix observation);
+
+        TPrediction[] Predict(F64Matrix observations, int[] indices);
     }
 }

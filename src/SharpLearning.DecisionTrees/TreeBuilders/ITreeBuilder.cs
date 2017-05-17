@@ -6,7 +6,7 @@ namespace SharpLearning.DecisionTrees.TreeBuilders
     /// <summary>
     /// Tree builder interface
     /// </summary>
-    public interface ITreeBuilder
+    public interface ITreeBuilder<TTreeType> where TTreeType : BinaryTree
     {
         /// <summary>
         /// 
@@ -16,6 +16,6 @@ namespace SharpLearning.DecisionTrees.TreeBuilders
         /// <param name="indices"></param>
         /// <param name="weights"></param>
         /// <returns></returns>
-        BinaryTree Build(F64MatrixView observations, double[] targets, int[] indices, double[] weights);
+        TTreeType Build(F64MatrixView observations, double[] targets, int[] indices, double[] weights);
     }
 }

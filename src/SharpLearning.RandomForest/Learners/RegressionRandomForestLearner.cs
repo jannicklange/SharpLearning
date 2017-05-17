@@ -16,7 +16,9 @@ namespace SharpLearning.RandomForest.Learners
     /// http://en.wikipedia.org/wiki/Random_forest
     /// http://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm
     /// </summary>
-    public sealed class RegressionRandomForestLearner : IIndexedLearner<double>, ILearner<double>
+    public sealed class RegressionRandomForestLearner<TRegressionDecisionTreeLearner, TRegressionDecisionTreeModel> : IIndexedLearner<double>, ILearner<double> 
+                                                        where TRegressionDecisionTreeLearner : DecisionTreeLearner, IIndexedLearner<double>, ILearner<double>
+                                                        where TRegressionDecisionTreeModel : IPredictorModel<double>
     {
         readonly int m_trees;
         int m_featuresPrSplit;
@@ -87,7 +89,7 @@ namespace SharpLearning.RandomForest.Learners
                 m_featuresPrSplit = count <= 0 ? 1 : count;
             }
 
-            var results = new ConcurrentBag<RegressionDecisionTreeModel>();
+            var results = new ConcurrentBag<TRegressionDecisionTreeModel>();
 
             if (!m_runParallel)
             {
@@ -135,7 +137,7 @@ namespace SharpLearning.RandomForest.Learners
             return Learn(observations, targets);
         }
 
-        double[] VariableImportance(RegressionDecisionTreeModel[] models, int numberOfFeatures)
+        double[] VariableImportance(TRegressionDecisionTreeModel[] models, int numberOfFeatures)
         {
             var rawVariableImportance = new double[numberOfFeatures];
 
@@ -151,9 +153,9 @@ namespace SharpLearning.RandomForest.Learners
             return rawVariableImportance;
         }
 
-        RegressionDecisionTreeModel CreateTree(F64Matrix observations, double[] targets, int[] indices, Random random)
+        TRegressionDecisionTreeModel CreateTree(F64Matrix observations, double[] targets, int[] indices, Random random)
         {
-            var learner = new RegressionDecisionTreeLearner(m_maximumTreeDepth, m_minimumSplitSize, m_featuresPrSplit,
+            var learner = (TRegressionDecisionTreeLearner)Activator.CreateInstance(typeof(TRegressionDecisionTreeLearner), m_maximumTreeDepth, m_minimumSplitSize, m_featuresPrSplit,
                 m_minimumInformationGain, random.Next());
 
             var treeIndicesLength = (int)Math.Round(m_subSampleRatio * (double)indices.Length);

@@ -16,7 +16,7 @@ namespace SharpLearning.RandomForest.Models
     [Serializable]
     public sealed class RegressionForestModel : IPredictorModel<double>
     {
-        readonly RegressionDecisionTreeModel[] m_models;
+        readonly IPredictorModel<double>[] m_models;
         readonly double[] m_rawVariableImportance;
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace SharpLearning.RandomForest.Models
         /// </summary>
         /// <param name="models">The decision tree models</param>
         /// <param name="rawVariableImportance">The summed variable importance from all decision trees</param>
-        public RegressionForestModel(RegressionDecisionTreeModel[] models, double[] rawVariableImportance)
+        public RegressionForestModel(IPredictorModel<double>[] models, double[] rawVariableImportance)
         {
             if (models == null) { throw new ArgumentNullException("models"); }
             if (rawVariableImportance == null) { throw new ArgumentNullException("rawVariableImportance"); }
@@ -57,6 +57,23 @@ namespace SharpLearning.RandomForest.Models
             for (int i = 0; i < rows; i++)
             {
                 predictions[i] = Predict(observations.Row(i));
+            }
+
+            return predictions;
+        }
+
+        /// <summary>
+        /// Predicts the observation subset provided by indices
+        /// </summary>
+        /// <param name="observations"></param>
+        /// <param name="indices"></param>
+        /// <returns></returns>
+        public double[] Predict(F64Matrix observations, int[] indices)
+        {
+            var predictions = new double[indices.Length];
+            for (int i = 0; i < indices.Length; i++)
+            {
+                predictions[i] = this.Predict(observations.Row(indices[i]));
             }
 
             return predictions;

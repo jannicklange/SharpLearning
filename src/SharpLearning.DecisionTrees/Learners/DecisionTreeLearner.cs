@@ -11,15 +11,15 @@ namespace SharpLearning.DecisionTrees.Learners
     /// Learns a Decision tree
     /// http://en.wikipedia.org/wiki/Decision_tree_learning
     /// </summary>
-    public unsafe class DecisionTreeLearner
+    public abstract unsafe class DecisionTreeLearner<TTreeType> where TTreeType : BinaryTree
     {
-        readonly ITreeBuilder m_treeBuilder;
+        readonly ITreeBuilder<TTreeType> m_treeBuilder;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="treeBuilder"></param>
-        public DecisionTreeLearner(ITreeBuilder treeBuilder)
+        public DecisionTreeLearner(ITreeBuilder<TTreeType> treeBuilder)
         {
             if (treeBuilder == null) { throw new ArgumentNullException("treeBuilder"); }
             m_treeBuilder = treeBuilder;
@@ -31,7 +31,7 @@ namespace SharpLearning.DecisionTrees.Learners
         /// <param name="observations"></param>
         /// <param name="targets"></param>
         /// <returns></returns>
-        public BinaryTree Learn(F64Matrix observations, double[] targets)
+        public TTreeType Learn(F64Matrix observations, double[] targets)
         {
             return Learn(observations, targets, new double[0]);
         }
@@ -44,7 +44,7 @@ namespace SharpLearning.DecisionTrees.Learners
         /// <param name="targets"></param>
         /// <param name="weights"></param>
         /// <returns></returns>
-        public BinaryTree Learn(F64Matrix observations, double[] targets, double[] weights)
+        public TTreeType Learn(F64Matrix observations, double[] targets, double[] weights)
         {
             var indices = Enumerable.Range(0, targets.Length).ToArray();
             return Learn(observations, targets, indices, weights);
@@ -58,7 +58,7 @@ namespace SharpLearning.DecisionTrees.Learners
         /// <param name="targets"></param>
         /// <param name="indices"></param>
         /// <returns></returns>
-        public BinaryTree Learn(F64Matrix observations, double[] targets, int[] indices)
+        public TTreeType Learn(F64Matrix observations, double[] targets, int[] indices)
         {
             return Learn(observations, targets, indices, new double[0]);
         }
@@ -72,7 +72,7 @@ namespace SharpLearning.DecisionTrees.Learners
         /// <param name="indices"></param>
         /// <param name="weights">Provide weights inorder to weigh each sample separetely</param>
         /// <returns></returns>
-        public BinaryTree Learn(F64Matrix observations, double[] targets, int[] indices, double[] weights)
+        public TTreeType Learn(F64Matrix observations, double[] targets, int[] indices, double[] weights)
         {
             using (var pinnedFeatures = observations.GetPinnedPointer())
             {
@@ -88,7 +88,7 @@ namespace SharpLearning.DecisionTrees.Learners
         /// <param name="targets"></param>
         /// <param name="indices"></param>
         /// <returns></returns>
-        public BinaryTree Learn(F64MatrixView observations, double[] targets, int[] indices)
+        public TTreeType Learn(F64MatrixView observations, double[] targets, int[] indices)
         {
             return Learn(observations, targets, indices, new double[0]);
         }
@@ -102,7 +102,7 @@ namespace SharpLearning.DecisionTrees.Learners
         /// <param name="indices"></param>
         /// <param name="weights">Provide weights inorder to weigh each sample separetely</param>
         /// <returns></returns>
-        public BinaryTree Learn(F64MatrixView observations, double[] targets, int[] indices, double[] weights)
+        public TTreeType Learn(F64MatrixView observations, double[] targets, int[] indices, double[] weights)
         {
             return m_treeBuilder.Build(observations, targets, indices, weights);
         }
