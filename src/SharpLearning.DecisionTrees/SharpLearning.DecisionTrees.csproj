@@ -55,6 +55,7 @@
     <Compile Include="ImpurityCalculators\ClasificationImpurityCalculator.cs" />
     <Compile Include="ImpurityCalculators\GiniClasificationImpurityCalculator.cs" />
     <Compile Include="ImpurityCalculators\IImpurityCalculator.cs" />
+    <Compile Include="ImpurityCalculators\ITopImpurityCalculator.cs" />
     <Compile Include="ImpurityCalculators\RegressionImpurityCalculator.cs" />
     <Compile Include="ImpurityCalculators\TargetCounts.cs" />
     <Compile Include="ImpurityCalculators\TopPerformanceImpurityCalculator.cs" />

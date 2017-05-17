@@ -323,11 +323,9 @@ namespace SharpLearning.Containers.Extensions
         /// <returns></returns>
         public static double ScoreAtPercentile(this double[] values, double percentile)
         {
-            if (percentile == 1.0)
-                return values.Max();
+            if (percentile == 1.0) return values.Max();
 
-            if (percentile == 0.0)
-                return values.Min();
+            if (percentile == 0.0) return values.Min();
 
             var array = new double[values.Length];
             Array.Copy(values, array, values.Length);
@@ -337,8 +335,8 @@ namespace SharpLearning.Containers.Extensions
             var index = percentile * (values.Length - 1.0);
             var i = (int)index;
             var diff = index - i;
-            
-            if(diff != 0.0)
+
+            if (diff != 0.0)
             {
                 var j = i + 1;
                 var v1 = array[i];
@@ -346,7 +344,7 @@ namespace SharpLearning.Containers.Extensions
 
                 var v2 = array[j];
                 var w2 = index - i;
-                
+
                 return (v1 * w1 + v2 * w2) / (w1 + w2);
             }
 
@@ -438,14 +436,19 @@ namespace SharpLearning.Containers.Extensions
         public static int[] StratifiedIndexSampling<T>(this T[] data, int sampleSize, Random random)
         {
             if (data.Length < sampleSize)
-            { throw new ArgumentException("SampleSize " + sampleSize + " is larger than data size " + data.Length); }
+            {
+                throw new ArgumentException("SampleSize " + sampleSize + " is larger than data size " + data.Length);
+            }
 
             var requiredSamples = data.GroupBy(d => d)
                 .ToDictionary(d => d.Key, d => (int)Math.Round((double)d.Count() / (double)data.Length * (double)sampleSize));
 
             foreach (var kvp in requiredSamples)
             {
-                if (kvp.Value == 0) { throw new ArgumentException("Sample size is too small for value: " + kvp.Key + " to be included."); }
+                if (kvp.Value == 0)
+                {
+                    throw new ArgumentException("Sample size is too small for value: " + kvp.Key + " to be included.");
+                }
             }
 
             // Shuffle the indices to avoid sampling the data in original order.
@@ -453,12 +456,12 @@ namespace SharpLearning.Containers.Extensions
             indices.Shuffle(random);
 
             var currentSampleCount = requiredSamples.ToDictionary(k => k.Key, k => 0);
-            
+
             // might be slightly different than the specified depending on data destribution
             var actualSampleSize = requiredSamples.Select(s => s.Value).Sum();
-            
+
             // if actual sample size is different from specified add/subtract diff from largest class
-            if(actualSampleSize != sampleSize)
+            if (actualSampleSize != sampleSize)
             {
                 var diff = sampleSize - actualSampleSize;
                 var largestClassKey = requiredSamples.OrderByDescending(s => s.Value).First().Key;
@@ -467,12 +470,12 @@ namespace SharpLearning.Containers.Extensions
 
             var sampleIndices = new int[sampleSize];
             var sampleIndex = 0;
-                        
+
             for (int i = 0; i < data.Length; i++)
             {
                 var index = indices[i];
                 var value = data[index];
-                if(currentSampleCount[value] != requiredSamples[value])
+                if (currentSampleCount[value] != requiredSamples[value])
                 {
                     sampleIndices[sampleIndex++] = index;
                     currentSampleCount[value]++;
@@ -486,8 +489,7 @@ namespace SharpLearning.Containers.Extensions
 
             if (requiredSamples.Select(s => s.Value).Sum() != sampleSize)
             {
-                throw new ArgumentException("Actual sample size: " + actualSampleSize +
-                    " is different than specified sample size: " + sampleSize);
+                throw new ArgumentException("Actual sample size: " + actualSampleSize + " is different than specified sample size: " + sampleSize);
             }
 
             return sampleIndices;
@@ -507,23 +509,30 @@ namespace SharpLearning.Containers.Extensions
         /// <returns></returns>
         public static int[] StratifiedIndexSampling<T>(this T[] data, int sampleSize, int[] dataIndices, Random random)
         {
-            if (dataIndices.Length < sampleSize) 
-            { throw new ArgumentException("SampleSize " + sampleSize + " is larger than dataIndices size " + dataIndices.Length); }
-            if (data.Length < dataIndices.Length) 
-            { throw new ArgumentException("dataIndices " + dataIndices.Length + " is larger than data size " + data.Length); }
+            if (dataIndices.Length < sampleSize)
+            {
+                throw new ArgumentException("SampleSize " + sampleSize + " is larger than dataIndices size " + dataIndices.Length);
+            }
+            if (data.Length < dataIndices.Length)
+            {
+                throw new ArgumentException("dataIndices " + dataIndices.Length + " is larger than data size " + data.Length);
+            }
 
             var requiredSamples = data.GroupBy(d => d)
                 .ToDictionary(d => d.Key, d => (int)Math.Round((double)d.Count() / (double)data.Length * (double)sampleSize));
 
             foreach (var kvp in requiredSamples)
             {
-                if (kvp.Value == 0) { throw new ArgumentException("Sample size is too small for value: " + kvp.Key + " to be included."); }
+                if (kvp.Value == 0)
+                {
+                    throw new ArgumentException("Sample size is too small for value: " + kvp.Key + " to be included.");
+                }
             }
 
             var currentSampleCount = requiredSamples.ToDictionary(k => k.Key, k => 0);
             // might be slightly different than the specified depending on data destribution
             var actualSampleSize = requiredSamples.Select(s => s.Value).Sum();
-            
+
             // if actual sample size is different from specified add/subtract diff from largest class
             if (actualSampleSize != sampleSize)
             {
@@ -549,7 +558,7 @@ namespace SharpLearning.Containers.Extensions
                     currentSampleCount[value]++;
                 }
 
-                if(sampleIndex == sampleSize)
+                if (sampleIndex == sampleSize)
                 {
                     break;
                 }
@@ -557,11 +566,133 @@ namespace SharpLearning.Containers.Extensions
 
             if (requiredSamples.Select(s => s.Value).Sum() != sampleSize)
             {
-                throw new ArgumentException("Actual sample size: " + actualSampleSize +
-                    " is different than specified sample size: " + sampleSize);
+                throw new ArgumentException("Actual sample size: " + actualSampleSize + " is different than specified sample size: " + sampleSize);
             }
 
             return sampleIndices;
         }
+
+
+
+        /// <summary>
+        ///  Return specified number of smallest elements from array.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of array. Type must implement IComparable(T) interface.</typeparam>
+        /// <param name="array">The array to return elemnts from.</param>
+        /// <param name="count">The number of smallest elements to return. </param>
+        /// <returns>An IEnumerable(T) that contains the specified number of smallest elements of the input array. Returned elements are NOT sorted.</returns>
+        public static IEnumerable<T> TakeSmallest<T>(this T[] array, int count) where T : IComparable<T>
+        {
+            if (count < 0) throw new ArgumentOutOfRangeException("count", "Count is smaller than 0.");
+            if (count == 0) return new T[0];
+            if (array.Length <= count) return array;
+
+            return QuickSelectSmallest(array, count - 1).Take(count);
+        }
+
+        /// <summary>
+        /// Returns N:th smallest element from the array.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of array. Type must implement IComparable(T) interface.</typeparam>
+        /// <param name="array">The array to return elemnt from.</param>
+        /// <param name="n">Nth element. 0 is smallest element, when array.Length - 1 is largest element.</param>
+        /// <returns>N:th smalles element from the array.</returns>
+        public static T NthSmallestElement<T>(this T[] array, int n) where T : IComparable<T>
+        {
+            if (n < 0 || n > array.Length - 1) throw new ArgumentOutOfRangeException("n", n, string.Format("n should be between 0 and {0} it was {1}.", array.Length - 1, n));
+            if (array.Length == 0) throw new ArgumentException("Array is empty.", "array");
+            if (array.Length == 1) return array[0];
+
+            return QuickSelectSmallest(array, n)[n];
+        }
+
+        #region NSmallestHelperMethods
+
+        /// <summary>
+        ///  Partially sort array such way that elements before index position n are smaller or equal than elemnt at position n. And elements after n are larger or equal. 
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of array. Type must implement IComparable(T) interface.</typeparam>
+        /// <param name="input">The array which elements are being partially sorted. This array is not modified.</param>
+        /// <param name="n">Nth smallest element.</param>
+        /// <returns>Partially sorted array.</returns>
+        private static T[] QuickSelectSmallest<T>(T[] input, int n) where T : IComparable<T>
+        {
+            // Let's not mess up with our input array
+            // For very large arrays - we should optimize this somehow - or just mess up with our input
+            var partiallySortedArray = (T[])input.Clone();
+
+            // Initially we are going to execute quick select to entire array
+            var startIndex = 0;
+            var endIndex = input.Length - 1;
+
+            // Selecting initial pivot
+            // Maybe we are lucky and array is sorted initially?
+            var pivotIndex = n;
+
+            // Loop until there is nothing to loop (this actually shouldn't happen - we should find our value before we run out of values)
+            var r = new Random();
+            while (endIndex > startIndex)
+            {
+                pivotIndex = QuickSelectPartition(partiallySortedArray, startIndex, endIndex, pivotIndex);
+                if (pivotIndex == n)
+                    // We found our n:th smallest value - it is stored to pivot index
+                    break;
+                if (pivotIndex > n)
+                    // Array before our pivot index have more elements that we are looking for                    
+                    endIndex = pivotIndex - 1;
+                else
+                // Array before our pivot index has less elements that we are looking for                    
+                    startIndex = pivotIndex + 1;
+
+                // Omnipotent beings don't need to roll dices - but we do...
+                // Randomly select a new pivot index between end and start indexes (there are other methods, this is just most brutal and simplest)
+                // alternative: e.g. compute median of medians, using stepwidth c = 5 (or w/e).
+                pivotIndex = r.Next(startIndex, endIndex);
+            }
+            return partiallySortedArray;
+        }
+
+        /// <summary>
+        /// Sort elements in sub array between startIndex and endIndex, such way that elements smaller than or equal with value initially stored to pivot index are before
+        /// new returned pivot value index.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of array. Type must implement IComparable(T) interface.</typeparam>
+        /// <param name="array">The array that is being sorted.</param>
+        /// <param name="startIndex">Start index of sub array.</param>
+        /// <param name="endIndex">End index of sub array.</param>
+        /// <param name="pivotIndex">Pivot index.</param>
+        /// <returns>New pivot index. Value that was initially stored to <paramref name="pivotIndex"/> is stored to this newly returned index. All elements before this index are 
+        /// either smaller or equal with pivot value. All elements after this index are larger than pivot value.</returns>
+        /// <remarks>This method modifies paremater array.</remarks>
+        private static int QuickSelectPartition<T>(this T[] array, int startIndex, int endIndex, int pivotIndex) where T : IComparable<T>
+        {
+            var pivotValue = array[pivotIndex];
+            // Initially we just assume that value in pivot index is largest - so we move it to end (makes also for loop more straight forward)
+            array.Swap(pivotIndex, endIndex);
+            for (var i = startIndex; i < endIndex; i++)
+            {
+                if (array[i].CompareTo(pivotValue) > 0) continue;
+
+                // Value stored to i was smaller than or equal with pivot value - let's move it to start
+                array.Swap(i, startIndex);
+                // Move start one index forward 
+                startIndex++;
+            }
+            // Start index is now pointing to index where we should store our pivot value from end of array
+            array.Swap(endIndex, startIndex);
+            return startIndex;
+        }
+
+        private static void Swap<T>(this T[] array, int index1, int index2)
+        {
+            if (index1 == index2) return;
+
+            var temp = array[index1];
+            array[index1] = array[index2];
+            array[index2] = temp;
+        }
+
+        #endregion
+
     }
 }
