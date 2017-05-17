@@ -81,6 +81,17 @@ namespace SharpLearning.AdaBoost.Models
             return predictions;
         }
 
+        public double[] Predict(F64Matrix observations, int[] indices)
+        {
+            var predictions = new double[indices.Length];
+            for (int i = 0; i < indices.Length; i++)
+            {
+                predictions[i] = this.Predict(observations.Row(indices[i]));
+            }
+
+            return predictions;
+        }
+
         /// <summary>
         /// Returns the rescaled (0-100) and sorted variable importance scores with corresponding name
         /// </summary>
