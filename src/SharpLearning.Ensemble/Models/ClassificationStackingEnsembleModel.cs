@@ -47,6 +47,16 @@ namespace SharpLearning.Ensemble.Models
             return PredictProbability(observation).Prediction;
         }
 
+        ProbabilityPrediction[] IPredictor<ProbabilityPrediction>.Predict(F64Matrix observation)
+        {
+            return this.PredictProbability(observation);
+        }
+
+        ProbabilityPrediction[] IPredictor<ProbabilityPrediction>.Predict(F64Matrix observations, int[] indices)
+        {
+            return this.PredictProbability(observations, indices);
+        }
+
         /// <summary>
         /// Predicts a set of observations
         /// </summary>
@@ -59,6 +69,29 @@ namespace SharpLearning.Ensemble.Models
             for (int i = 0; i < observations.RowCount; i++)
             {
                 observations.Row(i, observation);
+                predictions[i] = Predict(observation);
+            }
+
+            return predictions;
+        }
+
+        double[] IPredictor<double>.Predict(F64Matrix observations, int[] indices)
+        {
+            return Predict(observations, indices);
+        }
+
+        /// <summary>
+        /// Predicts a set of observations
+        /// </summary>
+        /// <param name="observations"></param>
+        /// <returns></returns>
+        public double[] Predict(F64Matrix observations, int[] indices)
+        {
+            var predictions = new double[indices.Length];
+            var observation = new double[observations.ColumnCount];
+            for (int i = 0; i < indices.Length; i++)
+            {
+                observations.Row(indices[i], observation);
                 predictions[i] = Predict(observation);
             }
 
@@ -120,6 +153,24 @@ namespace SharpLearning.Ensemble.Models
             for (int i = 0; i < observations.RowCount; i++)
             {
                 observations.Row(i, observation);
+                predictions[i] = PredictProbability(observation);
+            }
+
+            return predictions;
+        }
+
+        /// <summary>
+        /// Predicts a set of observations using the ensembled probabilities
+        /// </summary>
+        /// <param name="observations"></param>
+        /// <returns></returns>
+        public ProbabilityPrediction[] PredictProbability(F64Matrix observations, int[] indices)
+        {
+            var predictions = new ProbabilityPrediction[indices.Length];
+            var observation = new double[observations.ColumnCount];
+            for (int i = 0; i < indices.Length; i++)
+            {
+                observations.Row(indices[i], observation);
                 predictions[i] = PredictProbability(observation);
             }
 

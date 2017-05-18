@@ -138,5 +138,35 @@ namespace SharpLearning.GradientBoost.Models
             new GenericXmlDataContractSerializer()
                 .Serialize(this, writer);
         }
+
+        /// <summary>
+        /// Predicts a set of observations
+        /// </summary>
+        /// <param name="observations"></param>
+        /// <param name="indices">Subset of <paramref name="observations"/> to predict</param>
+        /// <returns></returns>
+        double[] IPredictor<double>.Predict(F64Matrix observations, int[] indices)
+        {
+            return Predict(observations, indices);
+        }
+
+        /// <summary>
+        /// Predicts a set of observations
+        /// </summary>
+        /// <param name="observations">The observations</param>
+        /// <param name="indices">Subset of <paramref name="observations"/> to predict</param>
+        /// <returns></returns>
+        public double[] Predict(F64Matrix observations, int[] indices)
+        {
+            var predictions = new double[indices.Length];
+            var observation = new double[observations.ColumnCount];
+            for (int i = 0; i < indices.Length; i++)
+            {
+                observations.Row(indices[i], observation);
+                predictions[i] = Predict(observation);
+            }
+
+            return predictions;
+        }
     }
 }

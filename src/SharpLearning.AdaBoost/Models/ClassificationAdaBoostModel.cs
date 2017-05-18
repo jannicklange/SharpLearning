@@ -205,5 +205,71 @@ namespace SharpLearning.AdaBoost.Models
             new GenericXmlDataContractSerializer()
                 .Serialize(this, writer);
         }
+
+        /// <summary>
+        /// Predicts a set of observations
+        /// </summary>
+        /// <param name="observations"></param>
+        /// <returns></returns>
+        double[] IPredictor<double>.Predict(F64Matrix observations, int[] indices)
+        {
+            return Predict(observations, indices);
+        }
+
+        /// <summary>
+        /// Predicts a set of observations
+        /// </summary>
+        /// <param name="observations"></param>
+        /// <returns></returns>
+        public double[] Predict(F64Matrix observations, int[] indices)
+        {
+            var predictions = new double[indices.Length];
+            var observation = new double[observations.ColumnCount];
+            for (int i = 0; i < indices.Length; i++)
+            {
+                observations.Row(indices[i], observation);
+                predictions[i] = Predict(observation);
+            }
+
+            return predictions;
+        }
+
+        /// <summary>
+        /// Predicts a set of observations using the ensembled probabilities
+        /// </summary>
+        /// <param name="observations"></param>
+        /// <returns></returns>
+        public ProbabilityPrediction[] PredictProbability(F64Matrix observations, int[] indices)
+        {
+            var predictions = new ProbabilityPrediction[indices.Length];
+            var observation = new double[observations.ColumnCount];
+            for (int i = 0; i < indices.Length; i++)
+            {
+                observations.Row(indices[i], observation);
+                predictions[i] = PredictProbability(observation);
+            }
+
+            return predictions;
+        }
+
+        /// <summary>
+        /// Predicts a set of observations using the ensembled probabilities
+        /// </summary>
+        /// <param name="observations"></param>
+        /// <returns></returns>
+        ProbabilityPrediction[] IPredictor<ProbabilityPrediction>.Predict(F64Matrix observations)
+        {
+            return this.PredictProbability(observations);
+        }
+
+        /// <summary>
+        /// Predicts a set of observations using the ensembled probabilities
+        /// </summary>
+        /// <param name="observations"></param>
+        /// <returns></returns>
+        ProbabilityPrediction[] IPredictor<ProbabilityPrediction>.Predict(F64Matrix observations, int[] indices)
+        {
+            return this.PredictProbability(observations, indices);
+        }
     }
 }
