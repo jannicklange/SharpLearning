@@ -11,26 +11,20 @@ using System.Threading.Tasks;
 
 namespace SharpLearning.RandomForest.Learners
 {
+    using SharpLearning.DecisionTrees.ImpurityCalculators;
     using SharpLearning.DecisionTrees.Nodes;
+    using SharpLearning.DecisionTrees.SplitSearchers;
+    using SharpLearning.DecisionTrees.TreeBuilders;
 
     /// <summary>
     /// Trains a regression random forest
     /// http://en.wikipedia.org/wiki/Random_forest
     /// http://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm
     /// </summary>
-    public sealed class RegressionRandomForestLearner<TRegressionDecisionTreeLearner, TRegressionDecisionTreeModel> : IIndexedLearner<double>, ILearner<double> 
-                                                        where TRegressionDecisionTreeLearner : DecisionTreeLearner<TRegressionDecisionTreeModel>, IIndexedLearner<double>, ILearner<double>
-                                                        where TRegressionDecisionTreeModel : BinaryTree
+    public sealed class RegressionRandomForestLearner<TSplitSearcher, TImpurityCalculator> : GenericRandomizedForestBase<RegressionForestModel, RegressionDecisionTreeModel>, IIndexedLearner<double>, ILearner<double> 
+                                                        where TSplitSearcher : ISplitSearcher<TImpurityCalculator>
+                                                        where TImpurityCalculator : IImpurityCalculator
     {
-        readonly int m_trees;
-        int m_featuresPrSplit;
-        readonly int m_minimumSplitSize;
-        readonly double m_minimumInformationGain;
-        readonly double m_subSampleRatio;
-        readonly int m_maximumTreeDepth;
-        readonly Random m_random;
-        readonly bool m_runParallel;
-
         /// <summary>
         /// The random forest is an ensemble learner consisting of a series of randomized decision trees
         /// </summary>
@@ -46,129 +40,44 @@ namespace SharpLearning.RandomForest.Learners
         /// <param name="runParallel">Use multi threading to speed up execution (default is true)</param>
         public RegressionRandomForestLearner(int trees = 100, int minimumSplitSize = 1, int maximumTreeDepth = 2000,
             int featuresPrSplit = 0, double minimumInformationGain = .000001, double subSampleRatio = 1.0, int seed = 42, bool runParallel = true)
+            : base(trees, minimumSplitSize, maximumTreeDepth, featuresPrSplit, minimumInformationGain, subSampleRatio, seed, runParallel)
         {
-            if (trees < 1) { throw new ArgumentException("trees must be at least 1"); }
-            if (featuresPrSplit < 0) { throw new ArgumentException("features pr split must be at least 1"); }
-            if (minimumSplitSize <= 0) { throw new ArgumentException("minimum split size must be larger than 0"); }
-            if (maximumTreeDepth <= 0) { throw new ArgumentException("maximum tree depth must be larger than 0"); }
-            if (minimumInformationGain <= 0) { throw new ArgumentException("minimum information gain must be larger than 0"); }
-
-            m_trees = trees;
-            m_minimumSplitSize = minimumSplitSize;
-            m_maximumTreeDepth = maximumTreeDepth;
-            m_featuresPrSplit = featuresPrSplit;
-            m_minimumInformationGain = minimumInformationGain;
-            m_subSampleRatio = subSampleRatio;
-            m_runParallel = runParallel;
-
-            m_random = new Random(seed);
         }
 
-        /// <summary>
-        /// Learns a classification random forest
-        /// </summary>
-        /// <param name="observations"></param>
-        /// <param name="targets"></param>
-        /// <returns></returns>
-        public RegressionForestModel Learn(F64Matrix observations, double[] targets)
+        protected override RegressionDecisionTreeModel CallCreateTree(F64Matrix observations, double[] targets, int[] indices)
         {
-            var indices = Enumerable.Range(0, targets.Length).ToArray();
-            return Learn(observations, targets, indices);
-        }
-
-        /// <summary>
-        /// Learns a classification random forest
-        /// </summary>
-        /// <param name="observations"></param>
-        /// <param name="targets"></param>
-        /// <param name="indices"></param>
-        /// <returns></returns>
-        public RegressionForestModel Learn(F64Matrix observations, double[] targets, int[] indices)
-        {
-            if (m_featuresPrSplit == 0)
+            Random rng;
+            lock (this.rngLock)
             {
-                var count = (int)(observations.ColumnCount / 3.0);
-                m_featuresPrSplit = count <= 0 ? 1 : count;
+                rng = new Random(this.m_random.Next());
             }
 
-            var results = new ConcurrentBag<TRegressionDecisionTreeModel>();
+            var model = base.CreateTree<
+                        GenericRegressionDecisionTreeLearner<
+                            DepthFirstTreeBuilder<
+                                RegressionDecisionTreeModel, 
+                                TSplitSearcher, 
+                                TImpurityCalculator>, 
+                            RegressionDecisionTreeModel,
+                            TSplitSearcher, 
+                            TImpurityCalculator>,
+                        DepthFirstTreeBuilder<
+                            RegressionDecisionTreeModel, 
+                            TSplitSearcher, 
+                            TImpurityCalculator>, 
+                        TSplitSearcher, 
+                        TImpurityCalculator>(
+                            observations,
+                            targets,
+                            indices,
+                            rng,
+                            // Parameters for GenericRegressionDecisionTreeLearner
+                            this.m_maximumTreeDepth,
+                            this.m_featuresPrSplit,
+                            this.m_minimumInformationGain,
+                            rng.Next(),
+                            this.m_minimumSplitSize);
 
-            if (!m_runParallel)
-            {
-                for (int i = 0; i < m_trees; i++)
-                {
-                    results.Add(CreateTree(observations, targets, indices, new Random(m_random.Next())));
-                };
-            }
-            else
-            {
-                var workItems = Enumerable.Range(0, m_trees).ToArray();
-                var rangePartitioner = Partitioner.Create(workItems, true);
-                Parallel.ForEach(rangePartitioner, (work, loopState) =>
-                {
-                    results.Add(CreateTree(observations, targets, indices, new Random(m_random.Next())));
-                });
-            }
-
-            var models = results.ToArray();
-            var rawVariableImportance = VariableImportance(models, observations.ColumnCount);
-
-            return new RegressionForestModel(models, rawVariableImportance);
-        }
-
-        /// <summary>
-        /// Private explicit interface implementation for indexed learning.
-        /// </summary>
-        /// <param name="observations"></param>
-        /// <param name="targets"></param>
-        /// <param name="indices"></param>
-        /// <returns></returns>
-        IPredictorModel<double> IIndexedLearner<double>.Learn(F64Matrix observations, double[] targets, int[] indices)
-        {
-            return Learn(observations, targets, indices);
-        }
-
-        /// <summary>
-        /// Private explicit interface implementation for indexed learning.
-        /// </summary>
-        /// <param name="observations"></param>
-        /// <param name="targets"></param>
-        /// <returns></returns>
-        IPredictorModel<double> ILearner<double>.Learn(F64Matrix observations, double[] targets)
-        {
-            return Learn(observations, targets);
-        }
-
-        double[] VariableImportance(TRegressionDecisionTreeModel[] models, int numberOfFeatures)
-        {
-            var rawVariableImportance = new double[numberOfFeatures];
-
-            foreach (var model in models)
-            {
-                var modelVariableImportance = model.GetRawVariableImportance();
-
-                for (int j = 0; j < modelVariableImportance.Length; j++)
-                {
-                    rawVariableImportance[j] += modelVariableImportance[j];
-                }
-            }
-            return rawVariableImportance;
-        }
-
-        TRegressionDecisionTreeModel CreateTree(F64Matrix observations, double[] targets, int[] indices, Random random)
-        {
-            var learner = (TRegressionDecisionTreeLearner)Activator.CreateInstance(typeof(TRegressionDecisionTreeLearner), m_maximumTreeDepth, m_minimumSplitSize, m_featuresPrSplit,
-                m_minimumInformationGain, random.Next());
-
-            var treeIndicesLength = (int)Math.Round(m_subSampleRatio * (double)indices.Length);
-            var treeIndices = new int[treeIndicesLength];
-
-            for (int j = 0; j < treeIndicesLength; j++)
-            {
-                treeIndices[j] = indices[random.Next(indices.Length)];
-            }
-
-            var model = learner.Learn(observations, targets, treeIndices);
             return model;
         }
     }

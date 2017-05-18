@@ -19,18 +19,9 @@ namespace SharpLearning.RandomForest.Learners
     /// Learns a classification version of Extremely randomized trees
     /// http://www.montefiore.ulg.ac.be/~ernst/uploads/news/id63/extremely-randomized-trees.pdf
     /// </summary>
-    public sealed class ClassificationExtremelyRandomizedTreesLearner : IIndexedLearner<double>, IIndexedLearner<ProbabilityPrediction>,
+    public sealed class ClassificationExtremelyRandomizedTreesLearner : GenericRandomizedForestBase<ClassificationForestModel, ClassificationDecisionTreeModel>, IIndexedLearner<double>, IIndexedLearner<ProbabilityPrediction>,
         ILearner<double>, ILearner<ProbabilityPrediction>
     {
-        readonly int m_trees;
-        int m_featuresPrSplit;
-        readonly int m_minimumSplitSize;
-        readonly double m_minimumInformationGain;
-        readonly double m_subSampleRatio;
-        readonly int m_maximumTreeDepth;
-        readonly Random m_random;
-        readonly bool m_runParallel;
-
         /// <summary>
         /// The extremely randomized trees learner is an ensemble learner consisting of a series of randomized decision trees. 
         /// It takes the randomization a step futher than random forest and also select the splits randomly
@@ -47,23 +38,8 @@ namespace SharpLearning.RandomForest.Learners
         /// <param name="runParallel">Use multi threading to speed up execution (default is true)</param>
         public ClassificationExtremelyRandomizedTreesLearner(int trees = 100, int minimumSplitSize = 1, int maximumTreeDepth = 2000, 
             int featuresPrSplit = 0, double minimumInformationGain = .000001, double subSampleRatio = 1.0, int seed = 42, bool runParallel = true)
+            : base(trees, minimumSplitSize, maximumTreeDepth, featuresPrSplit, minimumInformationGain, subSampleRatio, seed, runParallel)
         {
-            if (trees < 1) { throw new ArgumentException("trees must be at least 1"); }
-            if (featuresPrSplit < 0) { throw new ArgumentException("features pr split must be at least 1"); }
-            if (minimumSplitSize <= 0) { throw new ArgumentException("minimum split size must be larger than 0"); }
-            if (maximumTreeDepth <= 0) { throw new ArgumentException("maximum tree depth must be larger than 0"); }
-            if (minimumInformationGain <= 0) { throw new ArgumentException("minimum information gain must be larger than 0"); }
-            if (subSampleRatio <= 0.0 || subSampleRatio > 1.0) { throw new ArgumentException("subSampleRatio must be larger than 0.0 and at max 1.0"); }
-
-            m_trees = trees;
-            m_minimumSplitSize = minimumSplitSize;
-            m_maximumTreeDepth = maximumTreeDepth;
-            m_featuresPrSplit = featuresPrSplit;
-            m_minimumInformationGain = minimumInformationGain;
-            m_subSampleRatio = subSampleRatio;
-            m_runParallel = runParallel;
-
-            m_random = new Random(seed);
         }
 
         /// <summary>
@@ -99,7 +75,7 @@ namespace SharpLearning.RandomForest.Learners
             {
                 for (int i = 0; i < m_trees; i++)
                 {
-                    results.Add(CreateTree(observations, targets, indices, new Random(m_random.Next())));
+                    results.Add(this.CallCreateTree(observations, targets, indices));
                 };
             }
             else
@@ -108,7 +84,7 @@ namespace SharpLearning.RandomForest.Learners
                 var rangePartitioner = Partitioner.Create(workItems, true);
                 Parallel.ForEach(rangePartitioner, (work, loopState) =>
                 {
-                    results.Add(CreateTree(observations, targets, indices, new Random(m_random.Next())));
+                    results.Add(this.CallCreateTree(observations, targets, indices));
                 });
             }
 
@@ -180,25 +156,58 @@ namespace SharpLearning.RandomForest.Learners
             return rawVariableImportance;
         }
 
-        ClassificationDecisionTreeModel CreateTree(F64Matrix observations, double[] targets, int[] indices, Random random)
+        //ClassificationDecisionTreeModel CreateTree(F64Matrix observations, double[] targets, int[] indices, Random random)
+        //{
+        //    var learner = new DecisionTreeLearner(
+        //        new DepthFirstTreeBuilder(m_maximumTreeDepth,
+        //            m_featuresPrSplit,
+        //            m_minimumInformationGain,
+        //            m_random.Next(),
+        //            new RandomSplitSearcher(m_minimumSplitSize, m_random.Next()),
+        //            new GiniClasificationImpurityCalculator()));
+
+        //    var treeIndicesLength = (int)Math.Round(m_subSampleRatio * (double)indices.Length);
+        //    var treeIndices = new int[treeIndicesLength];
+
+        //    for (int j = 0; j < treeIndicesLength; j++)
+        //    {
+        //        treeIndices[j] = indices[random.Next(indices.Length)];
+        //    }
+
+        //    var model = new ClassificationDecisionTreeModel(learner.Learn(observations, targets, treeIndices));
+
+        //    return model;
+        //}
+
+        protected override ClassificationDecisionTreeModel CallCreateTree(F64Matrix observations, double[] targets, int[] indices)
         {
-            var learner = new DecisionTreeLearner(
-                new DepthFirstTreeBuilder(m_maximumTreeDepth,
-                    m_featuresPrSplit,
-                    m_minimumInformationGain,
-                    m_random.Next(),
-                    new RandomSplitSearcher(m_minimumSplitSize, m_random.Next()),
-                    new GiniClasificationImpurityCalculator()));
-
-            var treeIndicesLength = (int)Math.Round(m_subSampleRatio * (double)indices.Length);
-            var treeIndices = new int[treeIndicesLength];
-
-            for (int j = 0; j < treeIndicesLength; j++)
+            Random rng;
+            lock (this.rngLock)
             {
-                treeIndices[j] = indices[random.Next(indices.Length)];
+                rng = new Random(this.m_random.Next());
             }
 
-            var model = new ClassificationDecisionTreeModel(learner.Learn(observations, targets, treeIndices));
+            var model = base.CreateTree<GenericRegressionDecisionTreeLearner<
+                            DepthFirstTreeBuilder<
+                                ClassificationDecisionTreeModel,
+                                RandomSplitSearcher<GiniClasificationImpurityCalculator>,
+                                GiniClasificationImpurityCalculator>,
+                            ClassificationDecisionTreeModel,
+                            RandomSplitSearcher<GiniClasificationImpurityCalculator>,
+                            GiniClasificationImpurityCalculator>,
+                    DepthFirstTreeBuilder<
+                            ClassificationDecisionTreeModel,
+                            RandomSplitSearcher<GiniClasificationImpurityCalculator>,
+                            GiniClasificationImpurityCalculator>,
+                    RandomSplitSearcher<GiniClasificationImpurityCalculator>,
+                    GiniClasificationImpurityCalculator>(observations, targets, indices, rng,
+                    // params for GenericRegressionDecisionTreeLearner
+                    this.m_maximumTreeDepth,
+                    this.m_featuresPrSplit,
+                    this.m_minimumInformationGain,
+                    rng.Next(),
+                    this.m_minimumSplitSize,
+                    rng.Next());
 
             return model;
         }

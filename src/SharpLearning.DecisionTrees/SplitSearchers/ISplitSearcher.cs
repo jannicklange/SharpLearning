@@ -6,7 +6,7 @@ namespace SharpLearning.DecisionTrees.SplitSearchers
     /// <summary>
     /// A SplitSearcher seeks to find the most optimal split for the given feature and targets
     /// </summary>
-    public interface ISplitSearcher<TImpurityCalculator> where TImpurityCalculator : IImpurityCalculator
+    public interface ISplitSearcher<in TImpurityCalculator> where TImpurityCalculator : IImpurityCalculator
     {
         /// <summary>
         /// 

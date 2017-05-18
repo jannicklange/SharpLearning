@@ -32,6 +32,8 @@ namespace SharpLearning.RandomForest.Learners
         protected readonly Random m_random;
         protected readonly bool m_runParallel;
 
+        protected object rngLock = new object();
+
         public GenericRandomizedForestBase(int trees = 100, int minimumSplitSize = 1, int maximumTreeDepth = 2000,
             int featuresPrSplit = 0, double minimumInformationGain = .000001, double subSampleRatio = 1.0, int seed = 42, bool runParallel = true)
         {

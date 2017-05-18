@@ -167,7 +167,5 @@ namespace SharpLearning.RandomForest.Learners
 
             return model;
         }
-
-        private object rngLock = new object();
     }
 }
