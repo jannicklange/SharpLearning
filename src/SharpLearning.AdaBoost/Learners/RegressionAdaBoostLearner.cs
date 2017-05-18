@@ -102,8 +102,8 @@ namespace SharpLearning.AdaBoost.Learners
                 m_maximumTreeDepth = 3;
             }
 
-            m_modelLearner = new RegressionDecisionTreeLearner(m_maximumTreeDepth, m_minimumSplitSize, 
-                observations.ColumnCount, m_minimumInformationGain, 42);
+            m_modelLearner = new RegressionDecisionTreeLearner(m_maximumTreeDepth, 
+                observations.ColumnCount, m_minimumInformationGain, 42, m_minimumSplitSize);
 
             m_modelErrors.Clear();
             m_modelWeights.Clear();

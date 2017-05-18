@@ -182,14 +182,13 @@ namespace SharpLearning.RandomForest.Learners
 
         ClassificationDecisionTreeModel CreateTree(F64Matrix observations, double[] targets, int[] indices, Random random)
         {
-            //var learner = new ClassificationDecisionTreeLearner(m_maximumTreeDepth, m_minimumSplitSize, m_featuresPrSplit, m_minimumInformationGain, random.Next());
-            //var learner = new DecisionTreeLearner(
-            //    new DepthFirstTreeBuilder(m_maximumTreeDepth,
-            //        m_featuresPrSplit,
-            //        m_minimumInformationGain,
-            //        m_random.Next(),
-            //        new RandomSplitSearcher(m_minimumSplitSize, m_random.Next()),
-            //        new GiniClasificationImpurityCalculator()));
+            var learner = new DecisionTreeLearner(
+                new DepthFirstTreeBuilder(m_maximumTreeDepth,
+                    m_featuresPrSplit,
+                    m_minimumInformationGain,
+                    m_random.Next(),
+                    new RandomSplitSearcher(m_minimumSplitSize, m_random.Next()),
+                    new GiniClasificationImpurityCalculator()));
 
             var treeIndicesLength = (int)Math.Round(m_subSampleRatio * (double)indices.Length);
             var treeIndices = new int[treeIndicesLength];

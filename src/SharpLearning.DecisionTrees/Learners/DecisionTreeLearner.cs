@@ -37,10 +37,11 @@ namespace SharpLearning.DecisionTrees.Learners
             var treeBuilder =
                 (TTreeBuilder)
                     Activator.CreateInstance(typeof(TTreeBuilder), maximumTreeDepth, featuresPrSplit, minimumInformationGain, seed, searcher, calculator);
+            this.m_treeBuilder = treeBuilder;
         }
 
-        public DecisionTreeLearner(int maximumTreeDepth, int featuresPrSplit, double minimumInformationGain, int seed, int minimumSplitSize) :
-            this(maximumTreeDepth, featuresPrSplit, minimumInformationGain, seed, (TSplitSearcher)Activator.CreateInstance(typeof(TSplitSearcher), minimumSplitSize), (TImpurityCalculator)Activator.CreateInstance(typeof(TImpurityCalculator)))
+        public DecisionTreeLearner(int maximumTreeDepth, int featuresPrSplit, double minimumInformationGain, int seed, params object[] splitSearcherCtorArgs) :
+            this(maximumTreeDepth, featuresPrSplit, minimumInformationGain, seed, (TSplitSearcher)Activator.CreateInstance(typeof(TSplitSearcher), splitSearcherCtorArgs), (TImpurityCalculator)Activator.CreateInstance(typeof(TImpurityCalculator)))
         {
         }
 

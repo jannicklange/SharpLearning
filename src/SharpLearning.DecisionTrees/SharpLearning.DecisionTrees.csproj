@@ -78,6 +78,7 @@
     <Compile Include="SplitSearchers\LinearSplitSearcher.cs" />
     <Compile Include="SplitSearchers\TopPerformanceResolutionSplitSearcher.cs" />
     <Compile Include="TreeBuilders\BestFirstTreeBuilder.cs" />
+    <Compile Include="TreeBuilders\ClassificationDepthFirstTreeBuilder.cs" />
     <Compile Include="TreeBuilders\DepthFirstTreeBuilder.cs" />
     <Compile Include="TreeBuilders\ITreeBuilder.cs" />
   </ItemGroup>

@@ -13,7 +13,7 @@ namespace SharpLearning.DecisionTrees.TreeBuilders
     /// <summary>
     /// Builds a decision tree in a depth first manner
     /// </summary>
-    public sealed class DepthFirstTreeBuilder<TTreeType, TSplitSearcher, TImpurityCalculator> : ITreeBuilder<TTreeType, TSplitSearcher, TImpurityCalculator> 
+    public class DepthFirstTreeBuilder<TTreeType, TSplitSearcher, TImpurityCalculator> : ITreeBuilder<TTreeType, TSplitSearcher, TImpurityCalculator> 
                                         where TTreeType : BinaryTree
                                         where TImpurityCalculator : IImpurityCalculator
                                         where TSplitSearcher : ISplitSearcher<TImpurityCalculator>

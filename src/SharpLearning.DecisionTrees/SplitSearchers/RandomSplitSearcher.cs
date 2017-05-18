@@ -9,7 +9,7 @@ namespace SharpLearning.DecisionTrees.SplitSearchers
     /// The implementation assumes that the features and targets have been sorted
     /// together using the features as sort criteria
     /// </summary>
-    public sealed class RandomSplitSearcher : ISplitSearcher<IImpurityCalculator>
+    public sealed class RandomSplitSearcher<TImpurityCalculator> : ISplitSearcher<TImpurityCalculator> where TImpurityCalculator : IImpurityCalculator
     {
         readonly int m_minimumSplitSize;
         readonly Random m_random;
@@ -37,7 +37,7 @@ namespace SharpLearning.DecisionTrees.SplitSearchers
         /// <param name="parentInterval"></param>
         /// <param name="parentImpurity"></param>
         /// <returns></returns>
-        public SplitResult FindBestSplit(IImpurityCalculator impurityCalculator, double[] feature, double[] targets, Interval1D parentInterval, double parentImpurity)
+        public SplitResult FindBestSplit(TImpurityCalculator impurityCalculator, double[] feature, double[] targets, Interval1D parentInterval, double parentImpurity)
         {
             var min = double.MaxValue;
             var max = double.MinValue;

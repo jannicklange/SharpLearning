@@ -180,8 +180,8 @@ namespace SharpLearning.RandomForest.Learners
 
         ClassificationDecisionTreeModel CreateTree(F64Matrix observations, double[] targets, int[] indices, Random random)
         {
-            var learner = new ClassificationDecisionTreeLearner(m_maximumTreeDepth, m_minimumSplitSize, m_featuresPrSplit,
-                m_minimumInformationGain, random.Next());
+            var learner = new ClassificationDecisionTreeLearner(m_maximumTreeDepth, m_featuresPrSplit,
+                m_minimumInformationGain, random.Next(), m_minimumSplitSize);
 
             var treeIndicesLength = (int)Math.Round(m_subSampleRatio * (double)indices.Length);
             var treeIndices = new int[treeIndicesLength];

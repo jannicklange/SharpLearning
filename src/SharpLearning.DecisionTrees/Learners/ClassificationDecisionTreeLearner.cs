@@ -13,7 +13,7 @@ namespace SharpLearning.DecisionTrees.Learners
     /// Trains a Classification Decision tree
     /// http://en.wikipedia.org/wiki/Decision_tree_learning
     /// </summary>
-    public sealed class ClassificationDecisionTreeLearner : DecisionTreeLearner<ClassificationDecisionTreeModel>, 
+    public sealed class ClassificationDecisionTreeLearner : DecisionTreeLearner<ClassificationDepthFirstTreeBuilder,ClassificationDecisionTreeModel, OnlyUniqueThresholdsSplitSearcher<GiniClasificationImpurityCalculator>, GiniClasificationImpurityCalculator>, 
         IIndexedLearner<double>, IIndexedLearner<ProbabilityPrediction>, ILearner<double>, ILearner<ProbabilityPrediction>
     {
         /// <summary>
@@ -26,9 +26,8 @@ namespace SharpLearning.DecisionTrees.Learners
         /// <param name="minimumInformationGain">The minimum improvement in information gain before a split is made</param>
         /// <param name="seed">Seed for feature selection if number of features pr split is not equal 
         /// to the total amount of features in observations. The features will be selected at random for each split</param>
-        public ClassificationDecisionTreeLearner(int maximumTreeDepth=2000, int minimumSplitSize=1, int featuresPrSplit=0, double minimumInformationGain=0.000001, int seed=42)
-            : base(new DepthFirstTreeBuilder<ClassificationDecisionTreeModel>(maximumTreeDepth, featuresPrSplit, minimumInformationGain, seed, new OnlyUniqueThresholdsSplitSearcher(minimumSplitSize),
-                   new GiniClasificationImpurityCalculator()))          
+        public ClassificationDecisionTreeLearner(int maximumTreeDepth=2000, int featuresPrSplit=0, double minimumInformationGain=0.000001, int seed=42, int minimumSplitSize = 1)
+            : base(maximumTreeDepth, featuresPrSplit, minimumInformationGain, seed, minimumSplitSize)          
         {
         }
                 
