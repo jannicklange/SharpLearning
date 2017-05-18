@@ -7,22 +7,41 @@ using System.Linq;
 
 namespace SharpLearning.DecisionTrees.Learners
 {
+    using SharpLearning.Common.Interfaces;
+    using SharpLearning.DecisionTrees.ImpurityCalculators;
+    using SharpLearning.DecisionTrees.SplitSearchers;
+
     /// <summary>
     /// Learns a Decision tree
     /// http://en.wikipedia.org/wiki/Decision_tree_learning
     /// </summary>
-    public abstract unsafe class DecisionTreeLearner<TTreeType> where TTreeType : BinaryTree
+    public abstract unsafe class DecisionTreeLearner<TTreeBuilder, TTreeType, TSplitSearcher, TImpurityCalculator> : IIndexedLearner<double>, ILearner<double> where TTreeType : BinaryTree
+                                                                                where TSplitSearcher : ISplitSearcher<TImpurityCalculator>
+                                                                                where TImpurityCalculator : IImpurityCalculator
+                                                                                where TTreeBuilder : ITreeBuilder<TTreeType, TSplitSearcher, TImpurityCalculator>
     {
-        readonly ITreeBuilder<TTreeType> m_treeBuilder;
+        readonly TTreeBuilder m_treeBuilder;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="treeBuilder"></param>
-        public DecisionTreeLearner(ITreeBuilder<TTreeType> treeBuilder)
+        public DecisionTreeLearner(TTreeBuilder treeBuilder)
         {
             if (treeBuilder == null) { throw new ArgumentNullException("treeBuilder"); }
             m_treeBuilder = treeBuilder;
+        }
+
+        public DecisionTreeLearner(int maximumTreeDepth, int featuresPrSplit, double minimumInformationGain, int seed, TSplitSearcher searcher, TImpurityCalculator calculator)
+        {
+            var treeBuilder =
+                (TTreeBuilder)
+                    Activator.CreateInstance(typeof(TTreeBuilder), maximumTreeDepth, featuresPrSplit, minimumInformationGain, seed, searcher, calculator);
+        }
+
+        public DecisionTreeLearner(int maximumTreeDepth, int featuresPrSplit, double minimumInformationGain, int seed, int minimumSplitSize) :
+            this(maximumTreeDepth, featuresPrSplit, minimumInformationGain, seed, (TSplitSearcher)Activator.CreateInstance(typeof(TSplitSearcher), minimumSplitSize), (TImpurityCalculator)Activator.CreateInstance(typeof(TImpurityCalculator)))
+        {
         }
 
         /// <summary>
@@ -105,6 +124,16 @@ namespace SharpLearning.DecisionTrees.Learners
         public TTreeType Learn(F64MatrixView observations, double[] targets, int[] indices, double[] weights)
         {
             return m_treeBuilder.Build(observations, targets, indices, weights);
+        }
+
+        IPredictorModel<double> IIndexedLearner<double>.Learn(F64Matrix observations, double[] targets, int[] indices)
+        {
+            return this.Learn(observations, targets, indices);
+        }
+
+        IPredictorModel<double> ILearner<double>.Learn(F64Matrix observations, double[] targets)
+        {
+            return this.Learn(observations, targets);
         }
     }
 }

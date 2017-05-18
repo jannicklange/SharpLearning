@@ -61,10 +61,11 @@
     <Compile Include="ImpurityCalculators\TopPerformanceImpurityCalculator.cs" />
     <Compile Include="Learners\DecisionTreeLearner.cs" />
     <Compile Include="Learners\ClassificationDecisionTreeLearner.cs" />
+    <Compile Include="Learners\RegressionDecisionTreeLearner.cs" />
     <Compile Include="Models\ClassificationDecisionTreeModel.cs" />
     <Compile Include="Models\RegressionDecisionTreeModel.cs" />
     <Compile Include="Nodes\DecisionNodeCreationItem.cs" />
-    <Compile Include="Learners\RegressionDecisionTreeLearner.cs" />
+    <Compile Include="Learners\GenericRegressionDecisionTreeLearner.cs" />
     <Compile Include="Nodes\Node.cs" />
     <Compile Include="Nodes\NodeExtensions.cs" />
     <Compile Include="Nodes\BinaryTree.cs" />
