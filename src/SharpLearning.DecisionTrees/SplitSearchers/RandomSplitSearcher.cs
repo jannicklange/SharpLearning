@@ -9,7 +9,7 @@ namespace SharpLearning.DecisionTrees.SplitSearchers
     /// The implementation assumes that the features and targets have been sorted
     /// together using the features as sort criteria
     /// </summary>
-    public sealed class RandomSplitSearcher : ISplitSearcher
+    public sealed class RandomSplitSearcher : ISplitSearcher<IImpurityCalculator>
     {
         readonly int m_minimumSplitSize;
         readonly Random m_random;

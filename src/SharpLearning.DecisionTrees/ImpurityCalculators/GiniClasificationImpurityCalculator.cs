@@ -11,7 +11,7 @@ namespace SharpLearning.DecisionTrees.ImpurityCalculators
         /// <summary>
         /// Gets the unique target names
         /// </summary>
-        public double[] TargetNames
+        public override double[] TargetNames
         {
             get { return m_targetNames; }
         }

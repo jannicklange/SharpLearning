@@ -8,7 +8,7 @@ namespace SharpLearning.DecisionTrees.ImpurityCalculators
     /// <summary>
     /// Base class for classifiction impurity calculators
     /// </summary>
-    public abstract class ClasificationImpurityCalculator
+    public abstract class ClasificationImpurityCalculator : IImpurityCalculator
     {
         /// <summary>
         /// 
@@ -236,6 +236,12 @@ namespace SharpLearning.DecisionTrees.ImpurityCalculators
         /// </summary>
         /// <returns></returns>
         public abstract double LeafValue();
+
+
+        /// <summary>
+        /// Gets the target names. Only applies to classification
+        /// </summary>
+        public abstract double[] TargetNames { get; }
 
         /// <summary>
         /// Calculates the weighted leaf value

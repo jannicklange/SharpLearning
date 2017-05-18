@@ -6,7 +6,7 @@ namespace SharpLearning.DecisionTrees.SplitSearchers
     /// <summary>
     /// A SplitSearcher seeks to find the most optimal split for the given feature and targets
     /// </summary>
-    public interface ISplitSearcher
+    public interface ISplitSearcher<TImpurityCalculator> where TImpurityCalculator : IImpurityCalculator
     {
         /// <summary>
         /// 
@@ -17,7 +17,7 @@ namespace SharpLearning.DecisionTrees.SplitSearchers
         /// <param name="parentInterval"></param>
         /// <param name="parentImpurity"></param>
         /// <returns></returns>
-        SplitResult FindBestSplit(IImpurityCalculator impurityCalculator, double[] feature, double[] targets,
+        SplitResult FindBestSplit(TImpurityCalculator impurityCalculator, double[] feature, double[] targets,
                    Interval1D parentInterval, double parentImpurity);
     }
 }

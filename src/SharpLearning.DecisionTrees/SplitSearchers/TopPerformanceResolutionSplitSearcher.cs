@@ -10,7 +10,7 @@ namespace SharpLearning.DecisionTrees.SplitSearchers
     using SharpLearning.Containers.Views;
     using SharpLearning.DecisionTrees.ImpurityCalculators;
 
-    public class TopPerformanceResolutionSplitSearcher : ISplitSearcher
+    public class TopPerformanceResolutionSplitSearcher : ISplitSearcher<ITopImpurityCalculator>
     {
         readonly int m_minimumSplitSize;
         readonly double m_minimumLeafWeight;
@@ -61,15 +61,8 @@ namespace SharpLearning.DecisionTrees.SplitSearchers
         /// <returns>
         /// The <see cref="SplitResult"/>.
         /// </returns>
-        public SplitResult FindBestSplit(IImpurityCalculator impurityCalculatorArg, double[] feature, double[] targets, Interval1D parentInterval, double parentImpurity)
+        public SplitResult FindBestSplit(ITopImpurityCalculator impurityCalculator, double[] feature, double[] targets, Interval1D parentInterval, double parentImpurity)
         {
-            if (!(impurityCalculatorArg is ITopImpurityCalculator))
-            {
-                throw new ArgumentException($"Impurity Calculator needs to implement {typeof(ITopImpurityCalculator)}", nameof(impurityCalculatorArg));
-            }
-
-            var impurityCalculator = (ITopImpurityCalculator)impurityCalculatorArg;
-
             // determine number of top performers
             // Proportion of samples considered to be top performers // ToDo: config!
             var q = .1;

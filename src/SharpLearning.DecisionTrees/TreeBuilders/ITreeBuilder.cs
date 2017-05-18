@@ -3,10 +3,15 @@ using SharpLearning.DecisionTrees.Nodes;
 
 namespace SharpLearning.DecisionTrees.TreeBuilders
 {
+    using SharpLearning.DecisionTrees.ImpurityCalculators;
+    using SharpLearning.DecisionTrees.SplitSearchers;
+
     /// <summary>
     /// Tree builder interface
     /// </summary>
-    public interface ITreeBuilder<TTreeType> where TTreeType : BinaryTree
+    public interface ITreeBuilder<TTreeType, TSplitSearcher, TImpurityCalculator> where TTreeType : BinaryTree
+                                                                                where TSplitSearcher : ISplitSearcher<TImpurityCalculator>
+                                                                                where TImpurityCalculator : IImpurityCalculator
     {
         /// <summary>
         /// 

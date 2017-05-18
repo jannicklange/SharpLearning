@@ -13,10 +13,14 @@ namespace SharpLearning.DecisionTrees.TreeBuilders
     /// <summary>
     /// Builds a decision tree in a depth first manner
     /// </summary>
-    public sealed class DepthFirstTreeBuilder<TTreeType> : ITreeBuilder<TTreeType> where TTreeType : BinaryTree
+    public sealed class DepthFirstTreeBuilder<TTreeType, TSplitSearcher, TImpurityCalculator> : ITreeBuilder<TTreeType, TSplitSearcher, TImpurityCalculator> 
+                                        where TTreeType : BinaryTree
+                                        where TImpurityCalculator : IImpurityCalculator
+                                        where TSplitSearcher : ISplitSearcher<TImpurityCalculator>
+                                        
     {
-        readonly ISplitSearcher m_splitSearcher;
-        readonly IImpurityCalculator m_impurityCalculator;
+        readonly TSplitSearcher m_splitSearcher;
+        readonly TImpurityCalculator m_impurityCalculator;
 
         readonly double m_minimumInformationGain;
         int m_featuresPrSplit;
@@ -55,7 +59,7 @@ namespace SharpLearning.DecisionTrees.TreeBuilders
         /// <param name="splitSearcher">The type of searcher used for finding the best features splits when learning the tree</param>
         /// <param name="impurityCalculator">Impurity calculator used to decide which split is optimal</param>
         public DepthFirstTreeBuilder(int maximumTreeDepth, int featuresPrSplit, double minimumInformationGain, int seed,
-            ISplitSearcher splitSearcher, IImpurityCalculator impurityCalculator)
+            TSplitSearcher splitSearcher, TImpurityCalculator impurityCalculator)
         {
             if (splitSearcher == null) { throw new ArgumentException("splitSearcher"); }
             if (maximumTreeDepth <= 0) { throw new ArgumentException("maximum tree depth must be larger than 0"); }
