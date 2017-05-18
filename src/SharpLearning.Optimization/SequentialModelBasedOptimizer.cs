@@ -8,6 +8,9 @@ using SharpLearning.Containers.Extensions;
 
 namespace SharpLearning.Optimization
 {
+    using SharpLearning.DecisionTrees.ImpurityCalculators;
+    using SharpLearning.DecisionTrees.SplitSearchers;
+
     /// <summary>
     /// Sequential Model-based optimization (SMBO). SMBO learns a model based on the initial parameter sets and scores.
     /// This model is used to sample new promising parameter candiates which are evaluated and added to the existing paramter sets.
@@ -30,7 +33,7 @@ namespace SharpLearning.Optimization
         readonly List<double[]> m_previousParameterSets;
         readonly List<double> m_previousParameterSetScores;
 
-        readonly RegressionRandomForestLearner m_learner;
+        readonly RegressionRandomForestLearner<OnlyUniqueThresholdsSplitSearcher<RegressionImpurityCalculator>, RegressionImpurityCalculator> m_learner;
         readonly ParticleSwarmOptimizer m_optimizer;
 
         /// <summary>
@@ -63,7 +66,7 @@ namespace SharpLearning.Optimization
 
             m_random = new Random(seed);
             // hyper parameters for regression random forest learner
-            m_learner = new RegressionRandomForestLearner(20, 1, 2000, parameters.Length, 1e-6, 1.0, 42, false);
+            m_learner = new RegressionRandomForestLearner<OnlyUniqueThresholdsSplitSearcher<RegressionImpurityCalculator>, RegressionImpurityCalculator>(20, 1, 2000, parameters.Length, 1e-6, 1.0, 42, false);
             // optimizer for finding maximum expectation (most promissing hyper parameters) from random forest model
             m_optimizer = new ParticleSwarmOptimizer(m_parameters, 100, 40);
         }
@@ -106,7 +109,7 @@ namespace SharpLearning.Optimization
 
             m_random = new Random(seed);
             // hyper parameters for regression random forest learner
-            m_learner = new RegressionRandomForestLearner(20, 1, 2000, parameters.Length, 1e-6, 1.0, 42, false);
+            m_learner = new RegressionRandomForestLearner<OnlyUniqueThresholdsSplitSearcher<RegressionImpurityCalculator>, RegressionImpurityCalculator>(20, 1, 2000, parameters.Length, 1e-6, 1.0, 42, false);
             // optimizer for finding maximum expectation (most promissing hyper parameters) from random forest model
             m_optimizer = new ParticleSwarmOptimizer(m_parameters, 100, 40);
 

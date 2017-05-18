@@ -65,6 +65,10 @@
       <Project>{c42002b6-1844-4618-8778-222160c42992}</Project>
       <Name>SharpLearning.Containers</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SharpLearning.DecisionTrees\SharpLearning.DecisionTrees.csproj">
+      <Project>{8EFE2F3F-779D-46D3-BEA4-6F04A52F52E1}</Project>
+      <Name>SharpLearning.DecisionTrees</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SharpLearning.RandomForest\SharpLearning.RandomForest.csproj">
       <Project>{f7a2f7be-4418-40c8-a058-9fc8c6aecee3}</Project>
       <Name>SharpLearning.RandomForest</Name>
