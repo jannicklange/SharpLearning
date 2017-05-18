@@ -17,7 +17,7 @@ namespace SharpLearning.DecisionTrees.Test.SplitSearchers
         [ExpectedException(typeof(ArgumentException))]
         public void OnlyUniqueThresholdsSplitSearcher_MinimumSplitSize()
         {
-            new RandomSplitSearcher(-1, 42);
+            new RandomSplitSearcher<GiniClasificationImpurityCalculator>(-1, 42);
         }
 
         [TestMethod]
@@ -34,7 +34,7 @@ namespace SharpLearning.DecisionTrees.Test.SplitSearchers
             impurityCalculator.Init(targets.Distinct().ToArray(), targets, new double[0], interval);
             var impurity = impurityCalculator.NodeImpurity();
 
-            var sut = new RandomSplitSearcher(1, 42);
+            var sut = new RandomSplitSearcher<GiniClasificationImpurityCalculator>(1, 42);
 
             var actual = sut.FindBestSplit(impurityCalculator, feature, targets,
                 interval, impurity);

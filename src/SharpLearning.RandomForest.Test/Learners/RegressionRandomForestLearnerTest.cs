@@ -13,6 +13,9 @@ using System.Linq;
 
 namespace SharpLearning.RandomForest.Test.Learners
 {
+    using SharpLearning.DecisionTrees.ImpurityCalculators;
+    using SharpLearning.DecisionTrees.SplitSearchers;
+
     [TestClass]
     public class RegressionRandomForestLearnerTest
     {
@@ -80,7 +83,7 @@ namespace SharpLearning.RandomForest.Test.Learners
             var targets = parser.EnumerateRows("Target").ToF64Vector();
             var rows = targets.Length;
 
-            var sut = new RegressionRandomForestLearner(100, 1, 100, 1, 0.0001, 1.0, 42, false);
+            var sut = new RegressionRandomForestLearner<OnlyUniqueThresholdsSplitSearcher<RegressionImpurityCalculator>, RegressionImpurityCalculator>(100, 1, 100, 1, 0.0001, 1.0, 42, false);
             
             var indices = Enumerable.Range(0, targets.Length).ToArray();
             indices.Shuffle(new Random(42));
@@ -104,7 +107,7 @@ namespace SharpLearning.RandomForest.Test.Learners
             var targets = parser.EnumerateRows("Target").ToF64Vector();
             var rows = targets.Length;
 
-            var sut = new RegressionRandomForestLearner(trees, 1, 100, 1, 0.0001, subSampleRatio, 42, false);
+            var sut = new RegressionRandomForestLearner<OnlyUniqueThresholdsSplitSearcher<RegressionImpurityCalculator>, RegressionImpurityCalculator>(trees, 1, 100, 1, 0.0001, subSampleRatio, 42, false);
             var model = sut.Learn(observations, targets);
 
             var predictions = model.Predict(observations);
@@ -121,7 +124,7 @@ namespace SharpLearning.RandomForest.Test.Learners
             var targets = parser.EnumerateRows("Pass").ToF64Vector();
             var rows = targets.Length;
 
-            var sut = new RegressionRandomForestLearner(trees, 5, 100, 1, 0.0001, subSampleRatio, 42, false);
+            var sut = new RegressionRandomForestLearner<OnlyUniqueThresholdsSplitSearcher<RegressionImpurityCalculator>, RegressionImpurityCalculator>(trees, 5, 100, 1, 0.0001, subSampleRatio, 42, false);
             var model = sut.Learn(observations, targets);
 
             var predictions = model.Predict(observations);

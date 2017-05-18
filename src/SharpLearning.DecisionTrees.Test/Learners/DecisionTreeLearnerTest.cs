@@ -11,7 +11,7 @@ namespace SharpLearning.DecisionTrees.Test.Learners
         [ExpectedException(typeof(ArgumentNullException))]
         public void DecisionTreeLearner_TreeBuilderIsNull()
         {
-            new DecisionTreeLearner(null);
+            new RegressionDecisionTreeLearner(null);
         }
     }
 }

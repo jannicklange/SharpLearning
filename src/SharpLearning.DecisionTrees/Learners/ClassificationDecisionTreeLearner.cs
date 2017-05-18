@@ -30,7 +30,22 @@ namespace SharpLearning.DecisionTrees.Learners
             : base(maximumTreeDepth, featuresPrSplit, minimumInformationGain, seed, minimumSplitSize)          
         {
         }
-                
+
+        public ClassificationDecisionTreeLearner(
+            int maximumTreeDepth,
+            int featuresPrSplit,
+            double minimumInformationGain,
+            int seed,
+            OnlyUniqueThresholdsSplitSearcher<GiniClasificationImpurityCalculator> searcher,
+            GiniClasificationImpurityCalculator calculator) :
+            base(maximumTreeDepth, featuresPrSplit, minimumInformationGain, seed, searcher, calculator)
+        {
+        }
+
+        public ClassificationDecisionTreeLearner(ClassificationDepthFirstTreeBuilder builder) : base(builder)
+        {
+        }
+
         /// <summary>
         /// Private explicit interface implementation for indexed learning.
         /// </summary>

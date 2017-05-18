@@ -15,7 +15,7 @@ namespace SharpLearning.DecisionTrees.Learners
     /// Learns a Decision tree
     /// http://en.wikipedia.org/wiki/Decision_tree_learning
     /// </summary>
-    public abstract unsafe class DecisionTreeLearner<TTreeBuilder, TTreeType, TSplitSearcher, TImpurityCalculator> : IIndexedLearner<double>, ILearner<double> where TTreeType : BinaryTree
+    public unsafe class DecisionTreeLearner<TTreeBuilder, TTreeType, TSplitSearcher, TImpurityCalculator> : IIndexedLearner<double>, ILearner<double> where TTreeType : BinaryTree
                                                                                 where TSplitSearcher : ISplitSearcher<TImpurityCalculator>
                                                                                 where TImpurityCalculator : IImpurityCalculator
                                                                                 where TTreeBuilder : ITreeBuilder<TTreeType, TSplitSearcher, TImpurityCalculator>

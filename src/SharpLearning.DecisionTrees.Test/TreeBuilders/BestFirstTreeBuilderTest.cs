@@ -19,8 +19,8 @@ namespace SharpLearning.DecisionTrees.Test.TreeBuilders
         [ExpectedException(typeof(ArgumentException))]
         public void BestFirstTreeBuilder_InvalidMaximumTreeSize()
         {
-            new BestFirstTreeBuilder(0, 2, 1, 0.1, 42,
-                new LinearSplitSearcher(1),
+            new BestFirstTreeBuilder<ClassificationDecisionTreeModel, LinearSplitSearcher<GiniClasificationImpurityCalculator>, GiniClasificationImpurityCalculator>(0, 2, 1, 0.1, 42,
+                new LinearSplitSearcher<GiniClasificationImpurityCalculator>(1),
                 new GiniClasificationImpurityCalculator());
         }
 
@@ -28,8 +28,8 @@ namespace SharpLearning.DecisionTrees.Test.TreeBuilders
         [ExpectedException(typeof(ArgumentException))]
         public void BestFirstTreeBuilder_InvalidMaximumLeafCount()
         {
-            new BestFirstTreeBuilder(1, 1, 1, 0.1, 42,
-                new LinearSplitSearcher(1),
+            new BestFirstTreeBuilder<ClassificationDecisionTreeModel, LinearSplitSearcher<GiniClasificationImpurityCalculator>, GiniClasificationImpurityCalculator>(1, 1, 1, 0.1, 42,
+                new LinearSplitSearcher<GiniClasificationImpurityCalculator>(1),
                 new GiniClasificationImpurityCalculator());
         }
 
@@ -38,8 +38,8 @@ namespace SharpLearning.DecisionTrees.Test.TreeBuilders
         [ExpectedException(typeof(ArgumentException))]
         public void BestFirstTreeBuilder_InvalidFeaturesPrSplit()
         {
-            new BestFirstTreeBuilder(1, 2, -1, 0.1, 42,
-                new LinearSplitSearcher(1),
+            new BestFirstTreeBuilder<ClassificationDecisionTreeModel, LinearSplitSearcher<GiniClasificationImpurityCalculator>, GiniClasificationImpurityCalculator>(1, 2, -1, 0.1, 42,
+                new LinearSplitSearcher<GiniClasificationImpurityCalculator>(1),
                 new GiniClasificationImpurityCalculator());
         }
 
@@ -47,8 +47,8 @@ namespace SharpLearning.DecisionTrees.Test.TreeBuilders
         [ExpectedException(typeof(ArgumentException))]
         public void BestFirstTreeBuilder_InvalidMinimumInformationGain()
         {
-            new BestFirstTreeBuilder(1, 2, 1, 0, 42,
-                new LinearSplitSearcher(1),
+            new BestFirstTreeBuilder<ClassificationDecisionTreeModel, LinearSplitSearcher<GiniClasificationImpurityCalculator>, GiniClasificationImpurityCalculator>(1, 2, 1, 0, 42,
+                new LinearSplitSearcher<GiniClasificationImpurityCalculator>(1),
                 new GiniClasificationImpurityCalculator());
         }
 
@@ -60,10 +60,25 @@ namespace SharpLearning.DecisionTrees.Test.TreeBuilders
             var targets = parser.EnumerateRows("Target").ToF64Vector();
             var rows = targets.Length;
 
-            var sut = new DecisionTreeLearner(new BestFirstTreeBuilder(2000, 2000, observations.ColumnCount, 0.000001, 42,
-                new OnlyUniqueThresholdsSplitSearcher(1), new GiniClasificationImpurityCalculator()));
+            var sut =
+                new DecisionTreeLearner<
+                    BestFirstTreeBuilder<ClassificationDecisionTreeModel,
+                        OnlyUniqueThresholdsSplitSearcher<GiniClasificationImpurityCalculator>,
+                        GiniClasificationImpurityCalculator>, ClassificationDecisionTreeModel,
+                    OnlyUniqueThresholdsSplitSearcher<GiniClasificationImpurityCalculator>,
+                    GiniClasificationImpurityCalculator>(
+                    new BestFirstTreeBuilder<ClassificationDecisionTreeModel,
+                        OnlyUniqueThresholdsSplitSearcher<GiniClasificationImpurityCalculator>,
+                        GiniClasificationImpurityCalculator>(
+                        2000,
+                        2000,
+                        observations.ColumnCount,
+                        0.000001,
+                        42,
+                        new OnlyUniqueThresholdsSplitSearcher<GiniClasificationImpurityCalculator>(1),
+                        new GiniClasificationImpurityCalculator()));
 
-            var model = new ClassificationDecisionTreeModel(sut.Learn(observations, targets));
+            var model = sut.Learn(observations, targets);
 
             var predictions = model.Predict(observations);
 
@@ -82,10 +97,25 @@ namespace SharpLearning.DecisionTrees.Test.TreeBuilders
             var targets = parser.EnumerateRows("Target").ToF64Vector();
             var rows = targets.Length;
 
-            var sut = new DecisionTreeLearner(new BestFirstTreeBuilder(2000, 4, observations.ColumnCount, 0.000001, 42,
-                new OnlyUniqueThresholdsSplitSearcher(1), new GiniClasificationImpurityCalculator()));
+            var sut =
+                new DecisionTreeLearner<
+                    BestFirstTreeBuilder<ClassificationDecisionTreeModel,
+                        OnlyUniqueThresholdsSplitSearcher<GiniClasificationImpurityCalculator>,
+                        GiniClasificationImpurityCalculator>, ClassificationDecisionTreeModel,
+                    OnlyUniqueThresholdsSplitSearcher<GiniClasificationImpurityCalculator>,
+                    GiniClasificationImpurityCalculator>(
+                    new BestFirstTreeBuilder<ClassificationDecisionTreeModel,
+                        OnlyUniqueThresholdsSplitSearcher<GiniClasificationImpurityCalculator>,
+                        GiniClasificationImpurityCalculator>(
+                        2000,
+                        4,
+                        observations.ColumnCount,
+                        0.000001,
+                        42,
+                        new OnlyUniqueThresholdsSplitSearcher<GiniClasificationImpurityCalculator>(1),
+                        new GiniClasificationImpurityCalculator()));
 
-            var model = new ClassificationDecisionTreeModel(sut.Learn(observations, targets));
+            var model = sut.Learn(observations, targets);
 
             var predictions = model.Predict(observations);
 

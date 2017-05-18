@@ -37,6 +37,15 @@ namespace SharpLearning.DecisionTrees.Learners
         {
         }
 
+        public GenericRegressionDecisionTreeLearner(int maximumTreeDepth, int featuresPrSplit, double minimumInformationGain, int seed, TSplitSearcher searcher, TImpurityCalculator calculator)
+            : base(maximumTreeDepth, featuresPrSplit, minimumInformationGain, seed, searcher, calculator)
+        {
+        }
+
+        public GenericRegressionDecisionTreeLearner(TTreeBuilder builder) : base(builder)
+        {
+        }
+
         /// <summary>
         /// Private explicit interface implementation for indexed learning.
         /// </summary>

@@ -12,6 +12,9 @@ using System.Linq;
 
 namespace SharpLearning.RandomForest.Test.Models
 {
+    using SharpLearning.DecisionTrees.ImpurityCalculators;
+    using SharpLearning.DecisionTrees.SplitSearchers;
+
     [TestClass]
     public class RegressionForestModelTest
     {
@@ -23,7 +26,7 @@ namespace SharpLearning.RandomForest.Test.Models
             var targets = parser.EnumerateRows("Pass").ToF64Vector();
             var rows = targets.Length;
 
-            var learner = new RegressionRandomForestLearner(100, 5, 100, 1, 0.0001, 1.0, 42, false);
+            var learner = new RegressionRandomForestLearner<OnlyUniqueThresholdsSplitSearcher<RegressionImpurityCalculator>, RegressionImpurityCalculator>(100, 5, 100, 1, 0.0001, 1.0, 42, false);
             var sut = learner.Learn(observations, targets);
 
             var predictions = new double[rows];
@@ -46,7 +49,7 @@ namespace SharpLearning.RandomForest.Test.Models
             var targets = parser.EnumerateRows("Pass").ToF64Vector();
             var rows = targets.Length;
 
-            var learner = new RegressionRandomForestLearner(100, 5, 100, 1, 0.0001, 1.0, 42, false);
+            var learner = new RegressionRandomForestLearner<OnlyUniqueThresholdsSplitSearcher<RegressionImpurityCalculator>, RegressionImpurityCalculator>(100, 5, 100, 1, 0.0001, 1.0, 42, false);
             var sut = learner.Learn(observations, targets);
 
             var predictions = sut.Predict(observations);
@@ -65,7 +68,7 @@ namespace SharpLearning.RandomForest.Test.Models
             var targets = parser.EnumerateRows("Pass").ToF64Vector();
             var rows = targets.Length;
 
-            var learner = new RegressionRandomForestLearner(100, 5, 100, 1, 0.0001, 1.0, 42, false);
+            var learner = new RegressionRandomForestLearner<OnlyUniqueThresholdsSplitSearcher<RegressionImpurityCalculator>, RegressionImpurityCalculator>(100, 5, 100, 1, 0.0001, 1.0, 42, false);
             var sut = learner.Learn(observations, targets);
 
             var actual = new CertaintyPrediction[rows];
@@ -91,7 +94,7 @@ namespace SharpLearning.RandomForest.Test.Models
             var targets = parser.EnumerateRows("Pass").ToF64Vector();
             var rows = targets.Length;
 
-            var learner = new RegressionRandomForestLearner(100, 5, 100, 1, 0.0001, 1.0, 42, false);
+            var learner = new RegressionRandomForestLearner<OnlyUniqueThresholdsSplitSearcher<RegressionImpurityCalculator>, RegressionImpurityCalculator>(100, 5, 100, 1, 0.0001, 1.0, 42, false);
             var sut = learner.Learn(observations, targets);
             var actual = sut.PredictCertainty(observations);
 
@@ -113,7 +116,7 @@ namespace SharpLearning.RandomForest.Test.Models
             var featureNameToIndex = new Dictionary<string, int> { { "AptitudeTestScore", 0 }, 
                 { "PreviousExperience_month", 1 } };
 
-            var learner = new RegressionRandomForestLearner(100, 5, 100, 1, 0.0001, 1.0, 42, false);
+            var learner = new RegressionRandomForestLearner<OnlyUniqueThresholdsSplitSearcher<RegressionImpurityCalculator>, RegressionImpurityCalculator>(100, 5, 100, 1, 0.0001, 1.0, 42, false);
             var sut = learner.Learn(observations, targets);
 
             var actual = sut.GetVariableImportance(featureNameToIndex);
@@ -137,7 +140,7 @@ namespace SharpLearning.RandomForest.Test.Models
             var observations = parser.EnumerateRows(v => v != "Pass").ToF64Matrix();
             var targets = parser.EnumerateRows("Pass").ToF64Vector();
 
-            var learner = new RegressionRandomForestLearner(100, 5, 100, 1, 0.0001, 1.0, 42, false);
+            var learner = new RegressionRandomForestLearner<OnlyUniqueThresholdsSplitSearcher<RegressionImpurityCalculator>, RegressionImpurityCalculator>(100, 5, 100, 1, 0.0001, 1.0, 42, false);
             var sut = learner.Learn(observations, targets);
 
             var actual = sut.GetRawVariableImportance();
@@ -158,7 +161,7 @@ namespace SharpLearning.RandomForest.Test.Models
             var observations = parser.EnumerateRows(v => v != "Pass").ToF64Matrix();
             var targets = parser.EnumerateRows("Pass").ToF64Vector();
 
-            var learner = new RegressionRandomForestLearner(2, 5, 100, 1, 0.0001, 1.0, 42, false);
+            var learner = new RegressionRandomForestLearner<OnlyUniqueThresholdsSplitSearcher<RegressionImpurityCalculator>, RegressionImpurityCalculator>(2, 5, 100, 1, 0.0001, 1.0, 42, false);
             var sut = learner.Learn(observations, targets);
 
             // save model.

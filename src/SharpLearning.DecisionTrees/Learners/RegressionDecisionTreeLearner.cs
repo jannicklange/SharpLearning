@@ -26,5 +26,20 @@ namespace SharpLearning.DecisionTrees.Learners
             : base(maximumTreeDepth, featuresPrSplit, minimumInformationGain, seed, minimumSplitSize)
         {
         }
+
+        public RegressionDecisionTreeLearner(
+            int maximumTreeDepth,
+            int featuresPrSplit,
+            double minimumInformationGain,
+            int seed,
+            OnlyUniqueThresholdsSplitSearcher<RegressionImpurityCalculator> searcher,
+            RegressionImpurityCalculator calculator) :
+            base(maximumTreeDepth, featuresPrSplit, minimumInformationGain, seed, searcher, calculator)
+        {
+        }
+
+        public RegressionDecisionTreeLearner(DepthFirstTreeBuilder<RegressionDecisionTreeModel, OnlyUniqueThresholdsSplitSearcher<RegressionImpurityCalculator>, RegressionImpurityCalculator> builder) : base(builder)
+        {
+        }
     }
 }

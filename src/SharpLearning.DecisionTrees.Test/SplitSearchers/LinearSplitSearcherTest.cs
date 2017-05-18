@@ -17,7 +17,7 @@ namespace SharpLearning.DecisionTrees.Test.SplitSearchers
         [ExpectedException(typeof(ArgumentException))]
         public void LinearSplitSearcher_MinimumSplitSize()
         {
-            new LinearSplitSearcher(-1);
+            new LinearSplitSearcher<GiniClasificationImpurityCalculator>(-1);
         }
 
         [TestMethod]
@@ -34,7 +34,7 @@ namespace SharpLearning.DecisionTrees.Test.SplitSearchers
             impurityCalculator.Init(targets.Distinct().ToArray(), targets, new double[0], interval);
             var impurity = impurityCalculator.NodeImpurity();
 
-            var sut = new LinearSplitSearcher(1);
+            var sut = new LinearSplitSearcher<GiniClasificationImpurityCalculator>(1);
 
             var actual = sut.FindBestSplit(impurityCalculator, feature, targets,
                 interval, impurity);
@@ -61,7 +61,7 @@ namespace SharpLearning.DecisionTrees.Test.SplitSearchers
             impurityCalculator.Init(targets.Distinct().ToArray(), targets, weights, interval);
             var impurity = impurityCalculator.NodeImpurity();
 
-            var sut = new LinearSplitSearcher(1);
+            var sut = new LinearSplitSearcher<GiniClasificationImpurityCalculator>(1);
             
             var actual = sut.FindBestSplit(impurityCalculator, feature, targets,
                 interval, impurity);
@@ -87,7 +87,7 @@ namespace SharpLearning.DecisionTrees.Test.SplitSearchers
             impurityCalculator.Init(targets.Distinct().ToArray(), targets, new double[0], interval);
             var impurity = impurityCalculator.NodeImpurity();
 
-            var sut = new LinearSplitSearcher(1);
+            var sut = new LinearSplitSearcher<RegressionImpurityCalculator>(1);
 
             var actual = sut.FindBestSplit(impurityCalculator, feature, targets,
                 interval, impurity);
@@ -111,7 +111,7 @@ namespace SharpLearning.DecisionTrees.Test.SplitSearchers
             impurityCalculator.Init(targets.Distinct().ToArray(), targets, new double[0], interval);
             var impurity = impurityCalculator.NodeImpurity();
 
-            var sut = new LinearSplitSearcher(1);
+            var sut = new LinearSplitSearcher<GiniClasificationImpurityCalculator>(1);
 
             var actual = sut.FindBestSplit(impurityCalculator, feature, targets,
                 interval, impurity);

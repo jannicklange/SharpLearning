@@ -22,7 +22,7 @@ namespace SharpLearning.DecisionTrees.Test.Models
             var targets = parser.EnumerateRows("T").ToF64Vector();
             var rows = targets.Length;
 
-            var learner = new RegressionDecisionTreeLearner(100, 4, 2, 0.1, 42);
+            var learner = new RegressionDecisionTreeLearner(100, 4, 0.1, 42, 2);
             var sut = learner.Learn(observations, targets);
 
             var predictions = new double[rows];
@@ -45,7 +45,7 @@ namespace SharpLearning.DecisionTrees.Test.Models
             var targets = parser.EnumerateRows("T").ToF64Vector();
             var rows = targets.Length;
 
-            var learner = new RegressionDecisionTreeLearner(100, 4, 2, 0.1, 42);
+            var learner = new RegressionDecisionTreeLearner(100, 4, 0.1, 42, 2);
             var sut = learner.Learn(observations, targets);
 
             var predictions = sut.Predict(observations);
@@ -64,7 +64,7 @@ namespace SharpLearning.DecisionTrees.Test.Models
             var targets = parser.EnumerateRows("T").ToF64Vector();
             var rows = targets.Length;
 
-            var learner = new RegressionDecisionTreeLearner(100, 4, 2, 0.1, 42);
+            var learner = new RegressionDecisionTreeLearner(100, 4, 0.1, 42, 2);
             var sut = learner.Learn(observations, targets);
 
             var indices = new int[] { 0, 3, 4, 5, 6, 7, 8, 9, 20, 21 };
@@ -86,7 +86,7 @@ namespace SharpLearning.DecisionTrees.Test.Models
             var rows = targets.Length;
             var featureNameToIndex = new Dictionary<string, int> { { "F1", 0 }, { "F2", 1 } };
 
-            var learner = new RegressionDecisionTreeLearner(100, 4, 2, 0.1, 42);
+            var learner = new RegressionDecisionTreeLearner(100, 4, 0.1, 42, 2);
             var sut = learner.Learn(observations, targets);
 
             var actual = sut.GetVariableImportance(featureNameToIndex);
@@ -104,7 +104,7 @@ namespace SharpLearning.DecisionTrees.Test.Models
             var rows = targets.Length;
             var featureNameToIndex = new Dictionary<string, int> { { "F1", 0 }, { "F2", 1 } };
 
-            var learner = new RegressionDecisionTreeLearner(100, 4, 2, 0.1, 42);
+            var learner = new RegressionDecisionTreeLearner(100, 4, 0.1, 42, 2);
             var sut = learner.Learn(observations, targets);
 
             var actual = sut.GetRawVariableImportance();
@@ -125,7 +125,7 @@ namespace SharpLearning.DecisionTrees.Test.Models
             var observations = parser.EnumerateRows("F1", "F2").ToF64Matrix();
             var targets = parser.EnumerateRows("T").ToF64Vector();
 
-            var learner = new RegressionDecisionTreeLearner(100, 4, 2, 0.1, 42);
+            var learner = new RegressionDecisionTreeLearner(100, 4, 0.1, 42, 2);
             var sut = learner.Learn(observations, targets);
 
             var writer = new StringWriter();
