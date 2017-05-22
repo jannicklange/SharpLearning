@@ -185,9 +185,12 @@ namespace SharpLearning.RandomForest.Learners
             Random rng;
             lock (this.rngLock)
             {
+                // explcicitly query m_random in this order so that the old unit tests get their expected seeds
+                var rngSeed = this.m_random.Next();
+                rng = new Random(rngSeed);
                 seed1 = this.m_random.Next();
                 seed2 = this.m_random.Next();
-                rng = new Random(this.m_random.Next());
+                
             }
 
             var model = base.CreateTree<GenericRegressionDecisionTreeLearner<

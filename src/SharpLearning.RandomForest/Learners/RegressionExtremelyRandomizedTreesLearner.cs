@@ -133,9 +133,12 @@ namespace SharpLearning.RandomForest.Learners
         protected override RegressionDecisionTreeModel CallCreateTree(F64Matrix observations, double[] targets, int[] indices)
         {
             Random random;
+            int seed1, seed2;
             lock (rngLock)
             {
                 var seed = this.m_random.Next();
+                seed1 = m_random.Next();
+                seed2 = m_random.Next();
                 random = new Random(seed);
             }
             //TTreeLearner, TTreeBuilder, TSplitSearcher, TImpurityCalculator
@@ -162,9 +165,9 @@ namespace SharpLearning.RandomForest.Learners
                             this.m_maximumTreeDepth,
                             this.m_featuresPrSplit,
                             this.m_minimumInformationGain,
-                            random.Next(),
+                            seed1,
                             this.m_minimumSplitSize,
-                            random.Next());
+                            seed2);
 
             return model;
         }
