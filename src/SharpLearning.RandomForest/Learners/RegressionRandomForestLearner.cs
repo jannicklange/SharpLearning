@@ -49,7 +49,8 @@ namespace SharpLearning.RandomForest.Learners
             Random rng;
             lock (this.rngLock)
             {
-                rng = new Random(this.m_random.Next());
+                var seed = this.m_random.Next();
+                rng = new Random(seed);
             }
 
             var model = base.CreateTree<

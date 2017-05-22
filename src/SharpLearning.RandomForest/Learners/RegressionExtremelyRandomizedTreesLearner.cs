@@ -135,7 +135,8 @@ namespace SharpLearning.RandomForest.Learners
             Random random;
             lock (rngLock)
             {
-                random = new Random(this.m_random.Next());
+                var seed = this.m_random.Next();
+                random = new Random(seed);
             }
             //TTreeLearner, TTreeBuilder, TSplitSearcher, TImpurityCalculator
             var model =
