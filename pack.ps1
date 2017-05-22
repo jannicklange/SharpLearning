@@ -4,5 +4,6 @@ Foreach ($p in $projects)
     #Push-Location $p.Directory
     #..\..\packages\nuget.exe spec
     #Pop-Location
-    .\packages\nuget.exe pack $p -IncludeReferencedProjects -Properties Configuration=Release -OutputDirectory "nupkgs/"
+#    .\packages\nuget.exe pack $p -IncludeReferencedProjects -Properties Configuration=Release -OutputDirectory "nupkgs/"
+    .\packages\nuget.exe pack $p -IncludeReferencedProjects -Properties Configuration=Debug -OutputDirectory "nupkgs/"
 }
