@@ -9,6 +9,7 @@ using SharpLearning.Common.Interfaces;
 namespace SharpLearning.DecisionTrees.Learners
 {
     using System;
+    using System.Linq;
 
     using SharpLearning.DecisionTrees.Nodes;
 
@@ -16,7 +17,7 @@ namespace SharpLearning.DecisionTrees.Learners
     /// Trains a Regression Decision tree
     /// http://en.wikipedia.org/wiki/Decision_tree_learning
     /// </summary>
-    public abstract class GenericRegressionDecisionTreeLearner<TTreeBuilder, TTreeType, TSplitSearcher, TImpurityCalculator> : DecisionTreeLearner<TTreeBuilder,  TTreeType, TSplitSearcher, TImpurityCalculator>,
+    public class GenericRegressionDecisionTreeLearner<TTreeBuilder, TTreeType, TSplitSearcher, TImpurityCalculator> : DecisionTreeLearner<TTreeBuilder,  TTreeType, TSplitSearcher, TImpurityCalculator>,
         IIndexedLearner<double>, ILearner<double>
         where TTreeBuilder : ITreeBuilder<TTreeType, TSplitSearcher, TImpurityCalculator>
         where TTreeType : BinaryTree
@@ -43,6 +44,12 @@ namespace SharpLearning.DecisionTrees.Learners
         }
 
         public GenericRegressionDecisionTreeLearner(TTreeBuilder builder) : base(builder)
+        {
+        }
+
+        public GenericRegressionDecisionTreeLearner(int maximumTreeDepth = 2000, int featuresPrSplit = 0, double minimumInformationGain = 0.000001, int seed = 42, int minimumSplitSize = 1, params object[] splitSearcherParams)
+            : base(maximumTreeDepth, featuresPrSplit, minimumInformationGain, seed, new object[] {minimumSplitSize}.Concat(splitSearcherParams).ToArray())
+            //: base(maximumTreeDepth, featuresPrSplit, minimumInformationGain, seed, minimumSplitSize, splitSearcherParams)
         {
         }
 

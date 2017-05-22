@@ -181,9 +181,12 @@ namespace SharpLearning.RandomForest.Learners
 
         protected override ClassificationDecisionTreeModel CallCreateTree(F64Matrix observations, double[] targets, int[] indices)
         {
+            int seed1 = 0, seed2 = 0;
             Random rng;
             lock (this.rngLock)
             {
+                seed1 = this.m_random.Next();
+                seed2 = this.m_random.Next();
                 rng = new Random(this.m_random.Next());
             }
 
@@ -205,9 +208,9 @@ namespace SharpLearning.RandomForest.Learners
                     this.m_maximumTreeDepth,
                     this.m_featuresPrSplit,
                     this.m_minimumInformationGain,
-                    rng.Next(),
+                    seed1,
                     this.m_minimumSplitSize,
-                    rng.Next());
+                    seed2);
 
             return model;
         }
