@@ -55,10 +55,8 @@
     <Compile Include="ImpurityCalculators\ClasificationImpurityCalculator.cs" />
     <Compile Include="ImpurityCalculators\GiniClasificationImpurityCalculator.cs" />
     <Compile Include="ImpurityCalculators\IImpurityCalculator.cs" />
-    <Compile Include="ImpurityCalculators\ITopImpurityCalculator.cs" />
     <Compile Include="ImpurityCalculators\RegressionImpurityCalculator.cs" />
     <Compile Include="ImpurityCalculators\TargetCounts.cs" />
-    <Compile Include="ImpurityCalculators\TopPerformanceImpurityCalculator.cs" />
     <Compile Include="Learners\DecisionTreeLearner.cs" />
     <Compile Include="Learners\ClassificationDecisionTreeLearner.cs" />
     <Compile Include="Learners\RegressionDecisionTreeLearner.cs" />
@@ -76,7 +74,6 @@
     <Compile Include="SplitSearchers\SplitResult.cs" />
     <Compile Include="SplitSearchers\ISplitSearcher.cs" />
     <Compile Include="SplitSearchers\LinearSplitSearcher.cs" />
-    <Compile Include="SplitSearchers\TopPerformanceResolutionSplitSearcher.cs" />
     <Compile Include="TreeBuilders\BestFirstTreeBuilder.cs" />
     <Compile Include="TreeBuilders\ClassificationDepthFirstTreeBuilder.cs" />
     <Compile Include="TreeBuilders\DepthFirstTreeBuilder.cs" />
