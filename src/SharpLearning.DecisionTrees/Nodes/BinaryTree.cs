@@ -105,56 +105,46 @@ namespace SharpLearning.DecisionTrees.Nodes
         /// <summary>
         /// Predicts using a continous node strategy
         /// </summary>
-        /// <param name="node"></param>
+        /// <param name="root"></param>
         /// <param name="observation"></param>
         /// <returns></returns>
-        protected double Predict(Node node, double[] observation)
+        protected double Predict(Node root, double[] observation)
         {
-            if (node.FeatureIndex == -1.0)
-            {
-                return node.Value;
-            }
-
-            if (observation[node.FeatureIndex] <= node.Value)
-            {
-                return Predict(Nodes[node.LeftIndex], observation);
-            }
-            else
-            {
-                return Predict(Nodes[node.RightIndex], observation);
-            }
-
-            throw new InvalidOperationException("The tree is degenerated.");
+            return this.PredictNode(root, observation).Value;
         }
 
         /// <summary>
         /// Returns the prediction node using a continous node strategy
         /// </summary>
-        /// <param name="node"></param>
+        /// <param name="root"></param>
         /// <param name="observation"></param>
         /// <returns></returns>
-        protected Node PredictNode(Node node, double[] observation)
+        protected Node PredictNode(Node root, double[] observation)
         {
-            if (node.FeatureIndex == -1.0)
+            var currentNode = root;
+            var currentIteration = 0;
+            while (currentNode.FeatureIndex >= 0)
             {
-                return node;
+                if (observation[currentNode.FeatureIndex] <= currentNode.Value)
+                {
+                    currentNode = this.Nodes[currentNode.LeftIndex];
+                }
+                else
+                {
+                    currentNode = this.Nodes[currentNode.RightIndex];
+                }
+
+                // make sure to prevent infinite loop
+                // Tree might not be balanced, thus we cannot use something like Ceiling(Log(Nodes.Count, 2))
+                // Maybe use Ceiling(Nodes.Count / 2.0) ? 
+                if (currentIteration++ > this.Nodes.Count)
+                {
+                    throw new InvalidOperationException("The tree is degenerated.");
+                }
             }
 
-            if (observation[node.FeatureIndex] <= node.Value)
-            {
-                return PredictNode(Nodes[node.LeftIndex], observation);
-            }
-            else
-            {
-                return PredictNode(Nodes[node.RightIndex], observation);
-            }
-
-            throw new InvalidOperationException("The tree is degenerated.");
+            return currentNode;
         }
-
-
-
-        
 
         public double[] GetRawVariableImportance()
         {

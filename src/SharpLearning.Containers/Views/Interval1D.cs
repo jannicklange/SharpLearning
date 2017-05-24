@@ -38,6 +38,16 @@ namespace SharpLearning.Containers.Views
         }
 
         /// <summary>
+        /// Checks if given <paramref name="index"/> lies within this <see cref="Interval1D"/>.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public bool ContainsIndex(int index)
+        {
+            return index >= this.FromInclusive && index < this.ToExclusive;
+        }
+
+        /// <summary>
         /// Creates a 1D interval as specified from inclusive to exclusive
         /// </summary>
         /// <param name="fromInclusive"></param>
