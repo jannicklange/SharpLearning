@@ -95,7 +95,7 @@ namespace SharpLearning.DecisionTrees.TreeBuilders
 
             var numberOfFeatures = observations.GetNumberOfColumns();
 
-            if (m_featuresPrSplit == 0)
+            if (m_featuresPrSplit == 0 || m_featuresPrSplit > numberOfFeatures)
             {
                 m_featuresPrSplit = numberOfFeatures;
             }

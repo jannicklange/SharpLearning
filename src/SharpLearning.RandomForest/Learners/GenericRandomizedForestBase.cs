@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace SharpLearning.RandomForest.Learners
 {
     using System.Collections.Concurrent;
+    using System.Runtime.CompilerServices;
 
     using SharpLearning.Common.Interfaces;
     using SharpLearning.Containers;
@@ -18,40 +19,93 @@ namespace SharpLearning.RandomForest.Learners
     using SharpLearning.DecisionTrees.TreeBuilders;
     using SharpLearning.RandomForest.Models;
 
-    public abstract class GenericRandomizedForestBase<TForestModel, TTreeTypeModel> : IIndexedLearner<double>,
-        ILearner<double>
+    public abstract class GenericRandomizedForestBase<TForestModel, TTreeTypeModel> : IIndexedLearner<double>, ILearner<double>
         where TTreeTypeModel : BinaryTree
         where TForestModel : IPredictorModel<double>
     {
-        protected readonly int m_trees;
-        protected int m_featuresPrSplit;
-        protected readonly int m_minimumSplitSize;
-        protected readonly double m_subSampleRatio;
-        protected readonly double m_minimumInformationGain;
-        protected readonly int m_maximumTreeDepth;
-        protected readonly Random m_random;
-        protected readonly bool m_runParallel;
 
         protected object rngLock = new object();
+        private object initializeLock = new object();
+        private bool isInitialized;
+
+        protected int m_trees { get; private set; }
+        protected int m_minimumSplitSize { get; private set; }
+        protected double m_subSampleRatio { get; private set; }
+        protected double m_minimumInformationGain { get; private set; }
+        protected int m_maximumTreeDepth { get; private set; }
+        protected Random m_random { get; private set; }
+        protected bool m_runParallel { get; private set; }
+
+
+        protected int m_featuresPrSplit;
+
+        public GenericRandomizedForestBase()
+        {
+            // do nothing. initialize will be called from derived constructor, after string[] args has been parsed.
+        }
+
+        public GenericRandomizedForestBase(string[] args) : this()
+        {
+            
+        } 
 
         public GenericRandomizedForestBase(int trees = 100, int minimumSplitSize = 1, int maximumTreeDepth = 2000,
             int featuresPrSplit = 0, double minimumInformationGain = .000001, double subSampleRatio = 1.0, int seed = 42, bool runParallel = true)
         {
-            if (trees < 1) { throw new ArgumentException("trees must be at least 1"); }
-            if (featuresPrSplit < 0) { throw new ArgumentException("features pr split must be at least 1"); }
-            if (minimumSplitSize <= 0) { throw new ArgumentException("minimum split size must be larger than 0"); }
-            if (maximumTreeDepth <= 0) { throw new ArgumentException("maximum tree depth must be larger than 0"); }
-            if (minimumInformationGain <= 0) { throw new ArgumentException("minimum information gain must be larger than 0"); }
+            this.InitializeGenericRandomForestBase(trees, minimumSplitSize, maximumTreeDepth, featuresPrSplit, minimumInformationGain, subSampleRatio, seed, runParallel);
+        }
 
-            m_trees = trees;
-            m_minimumSplitSize = minimumSplitSize;
-            m_maximumTreeDepth = maximumTreeDepth;
-            m_featuresPrSplit = featuresPrSplit;
-            m_minimumInformationGain = minimumInformationGain;
-            m_subSampleRatio = subSampleRatio;
-            m_runParallel = runParallel;
+        protected void InitializeGenericRandomForestBase(
+            int trees = 100,
+            int minimumSplitSize = 1,
+            int maximumTreeDepth = 2000,
+            int featuresPrSplit = 0,
+            double minimumInformationGain = .000001,
+            double subSampleRatio = 1.0,
+            int seed = 42,
+            bool runParallel = true)
+        {
+            lock (this.initializeLock)
+            {
+                if (this.isInitialized)
+                {
+                    throw new InvalidOperationException($"{this.GetType().Name} is already initialzed!");
+                }
+                if (trees < 1)
+                {
+                    throw new ArgumentException("trees must be at least 1");
+                }
+                if (featuresPrSplit < 0)
+                {
+                    throw new ArgumentException("features pr split must be at least 1");
+                }
+                if (minimumSplitSize <= 0)
+                {
+                    throw new ArgumentException("minimum split size must be larger than 0");
+                }
+                if (maximumTreeDepth <= 0)
+                {
+                    throw new ArgumentException("maximum tree depth must be larger than 0");
+                }
+                if (minimumInformationGain <= 0)
+                {
+                    throw new ArgumentException("minimum information gain must be larger than 0");
+                }
 
-            m_random = new Random(seed);
+                m_trees = trees;
+                m_minimumSplitSize = minimumSplitSize;
+                m_maximumTreeDepth = maximumTreeDepth;
+                m_featuresPrSplit = featuresPrSplit;
+                m_minimumInformationGain = minimumInformationGain;
+                m_subSampleRatio = subSampleRatio;
+                m_runParallel = runParallel;
+
+                lock (this.rngLock)
+                {
+                    m_random = new Random(seed);
+                }
+                this.isInitialized = true;
+            }
         }
 
         IPredictorModel<double> IIndexedLearner<double>.Learn(F64Matrix observations, double[] targets, int[] indices)
@@ -72,6 +126,8 @@ namespace SharpLearning.RandomForest.Learners
 
         public virtual TForestModel Learn(F64Matrix observations, double[] targets, int[] indices)
         {
+            this.ThrowIfNotInitialized();
+
             if (m_featuresPrSplit == 0)
             {
                 var count = (int)(observations.ColumnCount / 3.0);
@@ -129,6 +185,17 @@ namespace SharpLearning.RandomForest.Learners
 
             var model = learner.Learn(observations, targets, treeIndices);
             return model;
+        }
+
+        protected void ThrowIfNotInitialized()
+        {
+            lock (this.initializeLock)
+            {
+                if (!this.isInitialized)
+                {
+                    throw new InvalidOperationException("Random Forest is not initialized!");
+                }
+            }
         }
 
         protected abstract TTreeTypeModel CallCreateTree(F64Matrix observations, double[] targets, int[] indices);

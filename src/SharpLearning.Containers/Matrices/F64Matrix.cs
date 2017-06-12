@@ -141,7 +141,7 @@ namespace SharpLearning.Containers.Matrices
         /// </summary>
         /// <param name="indices"></param>
         /// <returns></returns>
-        public IMatrix<double> Rows(params int[] indices)
+        public F64Matrix Rows(params int[] indices)
         {
             var rowCount = indices.Length;
             var subFeatureArray = new double[rowCount * ColumnCount];
@@ -157,6 +157,11 @@ namespace SharpLearning.Containers.Matrices
             }
 
             return new F64Matrix(subFeatureArray, indices.Length, ColumnCount);
+        }
+
+        IMatrix<double> IMatrix<double>.Rows(params int[] indices)
+        {
+            return this.Rows(indices);
         }
 
         /// <summary>
