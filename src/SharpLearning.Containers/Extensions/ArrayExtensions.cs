@@ -268,24 +268,23 @@ namespace SharpLearning.Containers.Extensions
         }
 
         /// <summary>
-        /// Calculates the weighted median. Expects values and weights to be sorted according to values
-        /// http://stackoverflow.com/questions/9794558/weighted-median-computation
+        /// Calculates the weighted median.
+        /// Expects values and weights to be sorted according to values!
         /// </summary>
-        /// <param name="values"></param>
-        /// <param name="weights"></param>
-        /// <returns></returns>
+        /// <param name="values">The sorted values.</param>
+        /// <param name="weights">The weight for each value.</param>
+        /// <returns>The weighted median.</returns>
         public static double WeightedMedian(this double[] values, double[] weights)
         {
-            double total = weights.Sum(); // the total weight
+            var total = weights.Sum();
+            var sum = total;
+            var k = -1;
 
-            int k = 0;
-            double sum = total - weights[0]; // sum is the total weight of all `x[i] > x[k]`
-
-            while (sum > total / 2)
+            do
             {
-                ++k;
-                sum -= weights[k];
+                sum -= weights[++k];
             }
+			while (sum > total / 2)
 
             return values[k];
         }
