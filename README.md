@@ -5,7 +5,7 @@ SharpLearning Fork
 --------------
 _**Note:**_
 
-This is a fork of the [SharpLearning](https://github.com/mdabros/SharpLearning) project by Mads Dabros that contains some changes to the API of the RandomForest and TreeLearner classes.
+This is a fork of the [SharpLearning](https://github.com/mdabros/SharpLearning) project by Mads Dabros that contains some changes to the API of the RandomForest and TreeLearner classes. It was based on the [SharpLearning 0.25.04](https://www.nuget.org/packages/SharpLearning.RandomForest/0.25.0.4) Release on [nuget.org](nuget.org).
 
 This fork is available under the [MIT License](LICENSE.md), just as the original project.
 
