@@ -1,7 +1,15 @@
 
-SharpLearning
+SharpLearning Fork
 =================
-[![Build status](https://ci.appveyor.com/api/projects/status/ps37sxd83yddob6i?svg=true)](https://ci.appveyor.com/project/mdabros/sharplearning)
+
+--------------
+_**Note:**_
+
+This is a fork of the [SharpLearning](https://github.com/mdabros/SharpLearning) project by Mads Dabros that contains some changes to the API of the RandomForest and TreeLearner classes.
+
+This fork is available under the [MIT License](LICENSE.md), just as the original project.
+
+--------------
 
 SharpLearning is an opensource machine learning library for C# .Net. 
 The goal of SharpLearning is to provide .Net developers with easy access to machine learning algorithms and models.
