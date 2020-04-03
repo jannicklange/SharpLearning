@@ -172,15 +172,6 @@ namespace SharpLearning.GradientBoost.GBMDecisionTree
                 var bestSplitResult = new GBMSplitResult { BestSplit = initBestSplit, Left = GBMSplitInfo.NewEmpty(), Right = GBMSplitInfo.NewEmpty() };
                 if (splitResults.Count != 0)
                 {
-                    // alternative to for finding bestsplit. gives slightly different results. probably due to order.
-                    //GBMSplitResult result;
-                    //while (splitResults.TryTake(out result))
-                    //{
-                    //    if (result.BestSplit.Cost < bestSplitResult.BestSplit.Cost)
-                    //    {
-                    //        bestSplitResult = result;
-                    //    }
-                    //}
                     bestSplitResult = splitResults.OrderBy(r => r.BestSplit.Cost).First();
 
                     var node = bestSplitResult.BestSplit.GetNode();
