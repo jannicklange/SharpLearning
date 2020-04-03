@@ -49,7 +49,6 @@ namespace SharpLearning.DecisionTrees.Learners
 
         public GenericRegressionDecisionTreeLearner(int maximumTreeDepth = 2000, int featuresPrSplit = 0, double minimumInformationGain = 0.000001, int seed = 42, int minimumSplitSize = 1, params object[] splitSearcherParams)
             : base(maximumTreeDepth, featuresPrSplit, minimumInformationGain, seed, new object[] {minimumSplitSize}.Concat(splitSearcherParams).ToArray())
-            //: base(maximumTreeDepth, featuresPrSplit, minimumInformationGain, seed, minimumSplitSize, splitSearcherParams)
         {
         }
 

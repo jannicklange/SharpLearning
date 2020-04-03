@@ -9,8 +9,6 @@ namespace SharpLearning.Metrics.Classification
     /// <typeparam name="T"></typeparam>
     public sealed class TotalErrorClassificationMetric<T> : IClassificationMetric<T>
     {
-        //readonly ClassificationMatrixStringConverter m_converter = new ClassificationMatrixStringConverter();
-        //readonly ClassificationMatrix m_classificationMatrix = new ClassificationMatrix();
 
         /// <summary>
         /// Calculates the total error metric on a multi label or binary classification problem

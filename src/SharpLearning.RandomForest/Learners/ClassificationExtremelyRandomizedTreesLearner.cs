@@ -155,30 +155,6 @@ namespace SharpLearning.RandomForest.Learners
             }
             return rawVariableImportance;
         }
-
-        //ClassificationDecisionTreeModel CreateTree(F64Matrix observations, double[] targets, int[] indices, Random random)
-        //{
-        //    var learner = new DecisionTreeLearner(
-        //        new DepthFirstTreeBuilder(m_maximumTreeDepth,
-        //            m_featuresPrSplit,
-        //            m_minimumInformationGain,
-        //            m_random.Next(),
-        //            new RandomSplitSearcher(m_minimumSplitSize, m_random.Next()),
-        //            new GiniClasificationImpurityCalculator()));
-
-        //    var treeIndicesLength = (int)Math.Round(m_subSampleRatio * (double)indices.Length);
-        //    var treeIndices = new int[treeIndicesLength];
-
-        //    for (int j = 0; j < treeIndicesLength; j++)
-        //    {
-        //        treeIndices[j] = indices[random.Next(indices.Length)];
-        //    }
-
-        //    var model = new ClassificationDecisionTreeModel(learner.Learn(observations, targets, treeIndices));
-
-        //    return model;
-        //}
-
         protected override ClassificationDecisionTreeModel CallCreateTree(F64Matrix observations, double[] targets, int[] indices)
         {
             int seed1 = 0, seed2 = 0;

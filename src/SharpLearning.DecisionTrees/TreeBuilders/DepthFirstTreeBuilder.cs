@@ -253,7 +253,6 @@ namespace SharpLearning.DecisionTrees.TreeBuilders
                 nodes.Add(leaf);
             }
 
-            //return new BinaryTree(nodes, probabilities, targetNames, m_variableImportance.ToArray());
             var retTree = (TTreeType)Activator.CreateInstance(typeof(TTreeType), nodes, probabilities, targetNames, this.m_variableImportance.ToArray());
             return retTree;
         }

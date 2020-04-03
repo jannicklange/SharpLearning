@@ -167,14 +167,6 @@ namespace SharpLearning.RandomForest.Learners
         {
             var learner = (TTreeLearner)Activator.CreateInstance(typeof(TTreeLearner), tTreeLearnerParams);
 
-            //var learner = new DecisionTreeLearner(
-            //    new DepthFirstTreeBuilder(m_maximumTreeDepth,
-            //        m_featuresPrSplit,
-            //        m_minimumInformationGain,
-            //        m_random.Next(),
-            //        new RandomSplitSearcher(m_minimumSplitSize, m_random.Next()),
-            //        new RegressionImpurityCalculator()));
-
             var treeIndicesLength = (int)Math.Round(m_subSampleRatio * (double)indices.Length);
             var treeIndices = new int[treeIndicesLength];
 

@@ -134,7 +134,7 @@ namespace SharpLearning.CrossValidation.Augmentators
                 distance += diff * diff;
             }
 
-            return distance;//Math.Sqrt(distance);
+            return distance;
         }
     }
 }
