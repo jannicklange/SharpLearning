@@ -284,7 +284,7 @@ namespace SharpLearning.Containers.Extensions
             {
                 sum -= weights[++k];
             }
-			while (sum > total / 2)
+            while (sum > total / 2);
 
             return values[k];
         }
