@@ -5,7 +5,8 @@ SharpLearning Fork
 --------------
 _**Note:**_
 
-This is a fork of the [SharpLearning](https://github.com/mdabros/SharpLearning) project by Mads Dabros that contains some changes to the API of the RandomForest and TreeLearner classes. It was based on the [SharpLearning 0.25.04](https://www.nuget.org/packages/SharpLearning.RandomForest/0.25.0.4) Release on [nuget.org](nuget.org).
+This is a fork of the [SharpLearning](https://github.com/mdabros/SharpLearning) project by Mads Dabros that contains some changes to the API of the RandomForest and TreeLearner classes. The classes/interfaces are extended in a way that allows for the implementation of a custom performance-focues split criterion, which is in the following paper: [GGA++](https://www.aaai.org/ocs/index.php/IJCAI/IJCAI15/paper/viewPaper/11435). <br/>
+The fork is based on the [SharpLearning 0.25.04](https://www.nuget.org/packages/SharpLearning.RandomForest/0.25.0.4) Release on [nuget.org](nuget.org).
 
 This fork is available under the [MIT License](LICENSE.md), just as the original project.
 
